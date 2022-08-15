@@ -23,15 +23,14 @@ import Deposits from './Deposits';
 import Orders from './Orders';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ProductItems from './ProductItems'
+import ProductItemsDataGrid from './ProductItemsDataGrid'
+
 
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
+      {'Copyright © Group 5 FIT2101 '}
       {new Date().getFullYear()}
       {'.'}
     </Typography>
@@ -159,11 +158,11 @@ function DashboardContent() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
               {/* Recent Orders */}
               <Grid item xs={12}>
-                <ProductItems />
+                <ProductItemsDataGrid />
               </Grid>
             </Grid>
             <Copyright sx={{ pt: 4 }} />
