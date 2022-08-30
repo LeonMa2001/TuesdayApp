@@ -110,7 +110,7 @@ data.forEach((val) => {rows.push(createData(val))})
 class ProductItemsDataGrid extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { displayItem: this.generateDataGrid() }
+        this.state = { displayItem: null }
     }
 
     // Generate the data grid with the provided information
@@ -135,19 +135,25 @@ class ProductItemsDataGrid extends React.Component {
     returnControl() {
         this.handleItemClick();
     }
+
     // Create a pop-up when a row is clicked
     // Returns to the main dashboard if rowID is not defined / null
     handleItemClick(rowID) {
-        if (!rowID) {this.setState({displayItem: this.generateDataGrid()})}
-        this.setState({ displayItem: <Task rowID={rowID} returnControl={() => this.handleItemClick()} /> });
+        this.setState({ displayItem: rowID });
+    }
+
+    displayComponent() {
+        if (this.state.displayItem) {
+            return <Task rowID={this.state.displayItem-1} returnControl={this.handleItemClick.bind(this)} /> // remove the -1 when having actual data
+        }
+        return this.generateDataGrid();
 
     }
 
     render() {
         return (
             <React.Fragment>
-                {console.log(this.state.displayItem)}
-                {this.state.displayItem}
+                {this.displayComponent()}
             </React.Fragment>
             
         )
