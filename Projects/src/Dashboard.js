@@ -17,9 +17,10 @@ import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
+import ListItems from './listItems';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import ProductItemsDataGrid from './ProductItemsDataGrid'
+import ProductItemsDataGrid from './ProductItemsDataGrid';
+import TeamInfo from './TeamInfo';
 
 
 
@@ -81,11 +82,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
+function DisplayPage(page) {
+  if (page == "product-backlog") { return <ProductItemsDataGrid />}
+  return <TeamInfo />
+}
+
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
+  const [page, setPage] = React.useState("product-backlog");
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const setPageName = (page) => {
+    setPage(page);
+    console.log(page);
+  }
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -139,7 +151,7 @@ function DashboardContent() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
+            <ListItems handleClick={setPageName} />
           </List>
         </Drawer>
         <Box
@@ -158,8 +170,9 @@ function DashboardContent() {
           <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
               {/* Product Items Data Grid */}
+              
               <Grid item xs={12}>
-                <ProductItemsDataGrid />
+                {DisplayPage(page)}
               </Grid>
             </Grid>
             <Copyright sx={{ pt: 4 }} />
