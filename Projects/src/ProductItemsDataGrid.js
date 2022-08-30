@@ -1,13 +1,12 @@
 /*
-    Replaces the Table version of the Product Backlog (ProductItems.js) with a DataGrid, which provides more customisation 
-    and is easier to modify
+    Use a DataGrid instead of a Table for easier / finer control of data and layout of items in the Product Backlog
 */
 
 import * as React from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button';
 
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 
 // https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
@@ -76,6 +75,9 @@ function createData(id, name, tag, priority, points) {
     };
   }
   
+/*
+  Dummy data: replace with calls to back-end
+*/ 
 const rows = [
 createData(1, 'Example story 1', 'Database', 'High', 5),
 createData(2, 'Example story 2', 'User Interface', 'Medium', 2),
