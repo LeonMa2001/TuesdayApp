@@ -20,7 +20,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import ListItems from './listItems';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ProductItemsDataGrid from './ProductItemsDataGrid';
-import TeamInfo from './TeamInfo';
+import TeamInfo, { showTeamMemberPopup } from './TeamInfo';
 
 
 
@@ -50,8 +50,8 @@ const AppBar = styled(MuiAppBar, {
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
+      }),
     }),
-  }),
 }));
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -85,6 +85,13 @@ const mdTheme = createTheme();
 function DisplayPage(page) {
   if (page == "product-backlog") { return <ProductItemsDataGrid />}
   return <TeamInfo />
+}
+
+const Add = (page) => {
+  if (page === "team") {
+    return showTeamMemberPopup()
+  }
+  return console.log('adding on a page that is not team page')
 }
 
 function DashboardContent() {
@@ -131,7 +138,7 @@ function DashboardContent() {
               {/* Page Header */}
               Product Backlog  
             </Typography> 
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={() => Add(page)}>
               <AddCircleIcon />
             </IconButton>
           </Toolbar>
