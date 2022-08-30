@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 
 import { DataGrid } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
+import Task from './Task.js'
 
 // https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
 
@@ -65,38 +66,92 @@ const columns = [
     }
 ];
 
-function createData(id, name, tag, priority, points) {
+function createData(data) {
     return {
-      id,
-      name,
-      tag,
-      priority,
-      points
+      id: data.id,
+      name: data.name,
+      tag: data.tag,
+      priority: data.priority,
+      storyPoints: data.storyPoints
     };
   }
   
 /*
   Dummy data: replace with calls to back-end
 */ 
-const rows = [
-createData(1, 'Example story 1', 'Database', 'High', 5),
-createData(2, 'Example story 2', 'User Interface', 'Medium', 2),
-createData(3, 'Example story 3', 'Testing', 'Low', 1),
-];
 
-export default function DataGridProductItems() {
-  return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        autoHeight
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-        disableSelectionOnClick
-        experimentalFeatures={{ newEditingApi: true }}
-      />
-    </Box>
-  );
+const data = [
+    {
+        id: 1,
+        name: "Example story 1",
+        tag: "Database",
+        priority: "High",
+        storyPoints: 5
+    },
+    {
+        id: 2,
+        name: "Example story 2",
+        tag: "User Interface",
+        priority: "Medium",
+        storyPoints: 2
+    },
+    {
+        id: 3,
+        name: "Example story 3",
+        tag: "Testing",
+        priority: "Low",
+        storyPoints: 5
+    }
+]
+const rows = []
+data.forEach((val) => {rows.push(createData(val))})
+
+
+class ProductItemsDataGrid extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = { displayItem: this.generateDataGrid() }
+    }
+
+    // Generate the data grid with the provided information
+    generateDataGrid() {
+        return (
+            <Box sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={5}
+                autoHeight
+                rowsPerPageOptions={[5]}
+                checkboxSelection
+                disableSelectionOnClick
+                experimentalFeatures={{ newEditingApi: true }}
+                onRowClick = { (rowData) => this.handleItemClick(rowData.id) }
+              />
+            </Box>
+        )
+    }
+
+    returnControl() {
+        this.handleItemClick();
+    }
+    // Create a pop-up when a row is clicked
+    // Returns to the main dashboard if rowID is not defined / null
+    handleItemClick(rowID) {
+        if (!rowID) {this.setState({displayItem: this.generateDataGrid()})}
+        this.setState({ displayItem: <Task rowID={rowID} returnControl={() => this.handleItemClick()} /> });
+
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                {console.log(this.state.displayItem)}
+                {this.state.displayItem}
+            </React.Fragment>
+            
+        )
+    }
 }
+
+export default ProductItemsDataGrid;
