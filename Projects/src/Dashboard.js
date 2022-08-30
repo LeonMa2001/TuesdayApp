@@ -88,8 +88,13 @@ function DisplayPage(page) {
 }
 
 const Add = (page) => {
+  const [open, setOpen] = React.useState(false);
+  const [name, setName] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [nameError, setNameError] = React.useState(true)
+  const [emailError, setEmailError] = React.useState(true)
   if (page === "team") {
-    return teamMemberModal()
+    return teamMemberModal(open, setOpen, name, setName, email, setEmail, nameError, setNameError, emailError, setEmailError)
   }
   return (
     <IconButton color="inherit">
