@@ -1,7 +1,8 @@
 import React from 'react';
 import Box from '@mui/material/Box'
 import { DataGrid } from '@mui/x-data-grid';
-
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import IconButton from '@mui/material/IconButton';
 
 const columns = [
     {
@@ -40,8 +41,12 @@ const rows = [
   createData(3, 'User3', 'test1@gmail.com'),
 ];
 
-export function showTeamMemberPopup() {
-  console.log('hi')
+export function teamMemberModal() {
+  return (
+    <IconButton color="inherit">
+      <AddCircleIcon />
+    </IconButton>
+  )
 };
 export default function TeamInfo() {
   return (

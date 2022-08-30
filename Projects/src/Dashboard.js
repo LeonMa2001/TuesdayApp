@@ -20,7 +20,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import ListItems from './listItems';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ProductItemsDataGrid from './ProductItemsDataGrid';
-import TeamInfo, { showTeamMemberPopup } from './TeamInfo';
+import TeamInfo, { teamMemberModal } from './TeamInfo';
 
 
 
@@ -89,9 +89,13 @@ function DisplayPage(page) {
 
 const Add = (page) => {
   if (page === "team") {
-    return showTeamMemberPopup()
+    return teamMemberModal()
   }
-  return console.log('adding on a page that is not team page')
+  return (
+    <IconButton color="inherit">
+          <AddCircleIcon />
+    </IconButton>
+  )
 }
 
 function DashboardContent() {
@@ -138,9 +142,7 @@ function DashboardContent() {
               {/* Page Header */}
               Product Backlog  
             </Typography> 
-            <IconButton color="inherit" onClick={() => Add(page)}>
-              <AddCircleIcon />
-            </IconButton>
+            {Add(page)}
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
