@@ -12,22 +12,8 @@ import Task from './Task.js'
 
 // https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
 
-const renderEditButton = (params) => {
-    return (
-        <strong>
-            <Button
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick = {() => {
-                    alert(params.row.name)
-                }}
-            ><EditIcon /></Button>
-        </strong>
-    )
-}
 
-const columns = [
+const columnsFunc = (renderEditButton) => [
     {
         field: 'id',
         headerName: 'ID',
@@ -110,7 +96,29 @@ data.forEach((val) => {rows.push(createData(val))})
 class ProductItemsDataGrid extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { displayItem: null }
+        this.state = { 
+            displayItem: null,
+            editing: false 
+        }
+
+        this.columns = columnsFunc(this.renderEditButton)
+        
+    }
+
+    renderEditButton = (rowID) => {
+        return (
+            <strong>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick = {(event) => {
+                        event.stopPropagation()
+                        this.handleItemClick(rowID.id, true)
+                    }}
+                ><EditIcon /></Button>
+            </strong>
+        )
     }
 
     // Generate the data grid with the provided information
@@ -119,7 +127,7 @@ class ProductItemsDataGrid extends React.Component {
             <Box sx={{ height: 400, width: '100%' }}>
               <DataGrid
                 rows={rows}
-                columns={columns}
+                columns={this.columns}
                 pageSize={5}
                 autoHeight
                 rowsPerPageOptions={[5]}
@@ -138,13 +146,13 @@ class ProductItemsDataGrid extends React.Component {
 
     // Create a pop-up when a row is clicked
     // Returns to the main dashboard if rowID is not defined / null
-    handleItemClick(rowID) {
-        this.setState({ displayItem: rowID });
+    handleItemClick(rowID, editing=false) {
+        this.setState({ displayItem: rowID, editing: editing});
     }
 
     displayComponent() {
         if (this.state.displayItem) {
-            return <Task rowID={this.state.displayItem-1} returnControl={this.handleItemClick.bind(this)} /> // remove the -1 when having actual data
+            return <Task rowID={this.state.displayItem-1} returnControl={this.handleItemClick.bind(this)} editing={this.state.editing} /> // remove the -1 when having actual data
         }
         return this.generateDataGrid();
 
