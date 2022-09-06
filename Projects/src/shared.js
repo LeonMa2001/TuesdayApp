@@ -1,9 +1,9 @@
 class SprintBoard {
-    consturctor() {
-        this._sprintName = "";
-        this._startDate = new Date();
-        this._endDate = new Date();
-        this._tasks = [];
+    consturctor(sprintName = "", startDate, endDate, tasks = []) {
+        this._sprintName = sprintName;
+        this._startDate = startDate;
+        this._endDate = endDate;
+        this._tasks = tasks;
     }
 
     get sprintName() {return this._sprintName;}
@@ -20,6 +20,7 @@ class SprintBoard {
     set endDate(date) {
         this._endDate = date;
     }
+
     length() {
         return this._tasks.length;
     }
@@ -28,7 +29,7 @@ class SprintBoard {
 
     // delete task method
 
-    fromData()
+    // fromData
 }
 
 
