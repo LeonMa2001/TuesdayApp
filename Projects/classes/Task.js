@@ -1,3 +1,5 @@
+import User from './User.js';
+
 class Task {
     constructor(taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[]){
         this._taskName = taskName;
@@ -26,7 +28,7 @@ class Task {
     get timeLog(){ return this._timeLog; }
 
     fromData(data){
-        users = data._assignees.map((user) => {
+        const users = data._assignees.map((user) => {
             return new User(user._name, user._email, user._timeLog);
         });
         return new Task(taskName=data._taskName, taskType=data._taskType, points=data._points, status=data._status, description=data._description, tag=data._tag, assignees=users);

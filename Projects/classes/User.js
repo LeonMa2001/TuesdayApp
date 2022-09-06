@@ -15,3 +15,5 @@ class User {
         this._timeLog = [];
     }
 }
+
+export default User;
