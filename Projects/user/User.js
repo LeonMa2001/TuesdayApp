@@ -1,7 +1,7 @@
 class User {
-    constructor(){
-        this._name = '';
-        this._email = '';
+    constructor(name = '', email = ''){
+        this._name = name;
+        this._email = email;
         this._timeLog = [];
     }
 
