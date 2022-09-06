@@ -39,13 +39,13 @@ const renderEditButton = (params) => {
 }
 
 const columns = [
-
     {
         field: 'name',
         headerName: 'Story Name',
         width: 300,
         editable: true,
         sortable: false,
+        filterable: false,
     },
     { 
         field: 'tag',
@@ -60,6 +60,7 @@ const columns = [
         width: 100,
         editable: false,
         sortable: false,
+        filterable: false,
     },
     { 
         field: 'points',
@@ -67,6 +68,7 @@ const columns = [
         width: 110,
         editable: false,
         sortable: false,
+        filterable: false,
     },
     {
         field: "editButton",
@@ -74,7 +76,7 @@ const columns = [
         width: 100,
         renderCell: renderEditButton,
         sortable: false,
-
+        filterable: false,
     }
 ];
 
@@ -100,6 +102,9 @@ createData(1, 'Example story 1', 'Database', 'High', 5),
 createData(2, 'Example story 2', 'User Interface', 'Medium', 2),
 createData(3, 'Example story 3', 'Testing', 'Low', 1),
 ];
+//while (){
+//   /* append to const rows with updated task information */
+//}
 
 function CustomToolbar() {
   return (
@@ -198,21 +203,19 @@ export default function DataGridProductItems() {
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
 
-        // Not working yet
-//        initialState={{
-//          filter: {
-//            filterModel: {
-//              items: [
-//                {
-//                  id: 1,
-//                  columnField: 'tag',
-//                  operatorValue: 'is',
-//                  value: 'Testing',
-//                },
-//              ],
-//            },
-//          },
-//        }}
+        initialState={{
+          filter: {
+            filterModel: {
+              items: [
+                {
+                  columnField: 'tag',
+                  operatorValue: 'equals',
+                  value: '',
+                },
+              ],
+            },
+          },
+        }}
       />
     </Box>
   );
