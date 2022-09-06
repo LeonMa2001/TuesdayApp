@@ -21,8 +21,6 @@ import {
 } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 
-// https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
-
 const renderEditButton = (params) => {
     return (
         <strong>
@@ -102,8 +100,12 @@ createData(1, 'Example story 1', 'Database', 'High', 5),
 createData(2, 'Example story 2', 'User Interface', 'Medium', 2),
 createData(3, 'Example story 3', 'Testing', 'Low', 1),
 ];
-//while (){
-//   /* append to const rows with updated task information */
+// PSUEDOCODE
+//task == open tasks array
+//cont rows = [];
+//
+//while (i = 0; i < task.length; i++){
+//      rows[i] = createData(task.getId(), task.getTaskName(), task.getTag(), task.getPriority(), task.getPoints());
 //}
 
 function CustomToolbar() {
