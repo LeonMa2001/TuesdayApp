@@ -66,10 +66,10 @@ class Task {
     }
 
     fromData(data){
-        users = data._assignees.forEach((user) => {
-            const newUser = new User(user._name, user._email, user._timeLog)
+        users = data._assignees.map((user) => {
+            return new User(user._name, user._email, user._timeLog)
         }) 
-        return new Task(taskName=data._taskName, taskType=data._taskType, points=data._points, status=data._status, description=data._description, tag=data._tag, assignees=data._assignees)
+        return new Task(taskName=data._taskName, taskType=data._taskType, points=data._points, status=data._status, description=data._description, tag=data._tag, assignees=users)
 
     }
 }
