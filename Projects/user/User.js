@@ -1,8 +1,8 @@
 class User {
-    constructor(name = '', email = ''){
+    constructor(name = '', email = '', timelog = []){
         this._name = name;
         this._email = email;
-        this._timeLog = [];
+        this._timeLog = timelog;
     }
 
     getName(){ return this.name; }
