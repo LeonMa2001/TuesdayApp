@@ -1,5 +1,5 @@
 class Task {
-    constructor(taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[] ){
+    constructor(taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[]){
         this._taskName = taskName;
         this._taskType = taskType;
         this._points = points;
@@ -9,67 +9,26 @@ class Task {
         this._assignees = assignees;
     }
 
-    addAssignee(newAssignee){
-        this._assignees.add(newAssignee);
-    }
+    addAssignee(newAssignee){ this._assignees.add(newAssignee); }
+    set taskName(newTaskName){this._taskName = newTaskName; }
+    set taskType(newTaskType){ this._taskType = newTaskType; }
+    set points(newPoints){ this._points = newPoints; }
+    set status(newStatus){ this._status = newStatus; }
+    set desc(newDesc){ this._desc = newDesc; }
+    set tag(newTag){ this._tag = newTag;}
 
-    setTaskName(newTaskName){
-        this._taskName = newTaskName;
-    }
-
-    setTaskType(newTaskType){
-        this._taskType = newTaskType;
-    }
-
-    setPoints(newPoints){
-        this._points = newPoints;
-    }
-
-    setStatus(newStatus){
-        this._status = newStatus;
-    }
-
-    setDesc(newDesc){
-        this._desc = newDesc;    
-    }
-
-    setTag(newTag){
-        this._tag = newTag;
-    }
-
-    getTaskName(){
-        return this._taskName;
-    }
-    
-    getTaskType(){
-        return this._taskType;
-    }
-
-    getPoints(){
-        return this._points;
-    }
-
-    getStatus(){
-        return this._status;
-    }
-
-    getDesc(){
-        return this._desc;
-    }
-
-    getTag(){
-        return this._tag;
-    }
-
-    getTimeLog(){
-        return this._timeLog;
-    }
+    get taskName(){ return this._taskName; }
+    get taskType(){ return this._taskType; }
+    get points(){ return this._points; }
+    get status(){ return this._status; }
+    get desc(){ return this._desc; }
+    get tag(){ return this._tag; }
+    get timeLog(){ return this._timeLog; }
 
     fromData(data){
         users = data._assignees.map((user) => {
-            return new User(user._name, user._email, user._timeLog)
-        }) 
-        return new Task(taskName=data._taskName, taskType=data._taskType, points=data._points, status=data._status, description=data._description, tag=data._tag, assignees=users)
-
+            return new User(user._name, user._email, user._timeLog);
+        });
+        return new Task(taskName=data._taskName, taskType=data._taskType, points=data._points, status=data._status, description=data._description, tag=data._tag, assignees=users);
     }
 }
