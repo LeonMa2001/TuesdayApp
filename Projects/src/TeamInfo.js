@@ -2,26 +2,30 @@ import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Button, Typography, TextField, Modal, IconButton, Box, Grid } from '@mui/material';
+import LocalStorage from './classes/LocalStorage';
+import User from './classes/User.js';
 
-class User { // dummy user class for testing only
-  constructor(id, name, email) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-  }
-
-  createData() { return {id: this.id, name: this.name, email: this.email}; }
+const teamMembers = []
+if (LocalStorage.exists(LocalStorage.USERS)) { // get local storage data
+  const data = LocalStorage.get(LocalStorage.USERS);
+  data.forEach((datum) => {
+    const teamMember = new User();
+    teamMember.fromData(datum);
+    teamMembers.push(teamMember);
+  });
 }
 
-const teamMembers = [ // dummy list of team members (would be derived from backend)
-  new User(1, 'User1', 'test1@gmail.com'),
-  new User(2, 'User2', 'test1@gmail.com'),
-  new User(3, 'User3', 'test1@gmail.com')
-];
+let userId = 0
+if (LocalStorage.exists(LocalStorage.USER_ID)) {
+  userId = LocalStorage.get(LocalStorage.USER_ID)
+  console.log(typeof userId)
+}
+
 
 const addTeamMember = (name, email) => { // add a team member to the list 
-  teamMembers.push(new User(teamMembers[teamMembers.length-1].id+1, name, email))
-  // ***** ADD BACKEND TO ADD TEAM MEMBER ******* //
+  teamMembers.push(new User(++userId, name, email))
+  LocalStorage.set(LocalStorage.USER_ID, userId);
+  LocalStorage.set(LocalStorage.USERS, teamMembers);
 };
 
 const columns = [ // columns to show in the data grid
@@ -138,6 +142,7 @@ export function teamMemberModal(open, setOpen, name, setName, email, setEmail, n
               variant="contained" 
               onClick={() => {
                 addTeamMember(name, email); // otherwise add the team member and close the popup
+                
                 handleClose();
               }}
               disabled={nameError[0] || emailError[0]} // add button is disabled if input in invalid

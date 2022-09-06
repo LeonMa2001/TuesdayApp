@@ -1,7 +1,8 @@
-import User from './User.js';
+import User from './User.js.js';
 
 class Task {
-    constructor(taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[]){
+    constructor(id="", taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[]){
+        this._id = id;
         this._taskName = taskName;
         this._taskType = taskType;
         this._points = points;
@@ -34,3 +35,5 @@ class Task {
         return new Task(taskName=data._taskName, taskType=data._taskType, points=data._points, status=data._status, description=data._description, tag=data._tag, assignees=users);
     }
 }
+
+export default Task;
