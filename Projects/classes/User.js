@@ -5,9 +5,9 @@ class User {
         this._timeLog = timelog;
     }
 
-    getName(){ return this.name; }
+    get name(){ return this.name; }
 
-    getEmail(){ return this.email; }
+    get email(){ return this.email; }
 
     fromData(data){
         this._name = data._name;
