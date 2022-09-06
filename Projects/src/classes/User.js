@@ -11,12 +11,13 @@ class User {
     get id() {return this._id; }
 
     fromData(data){
+        this._id = data._id;
         this._name = data._name;
         this._email = data._email;
         this._timeLog = [];
     }
 
-    createData() { return {id: this.id, name: this.name, email: this.email}; }
+    createData() { return {id: this._id, name: this._name, email: this._email}; }
 }
 
 export default User;

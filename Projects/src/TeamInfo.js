@@ -3,33 +3,31 @@ import { DataGrid } from '@mui/x-data-grid';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Button, Typography, TextField, Modal, IconButton, Box, Grid } from '@mui/material';
 import LocalStorage from './classes/LocalStorage';
-import User from './classes/User.js';
+import User from './classes/User';
 
-const teamMembers = []
-if (LocalStorage.exists(LocalStorage.USERS)) { // get local storage data
+const teamMembers = [];
+if (LocalStorage.exists(LocalStorage.USERS)) { // get local storage data for users
   const data = LocalStorage.get(LocalStorage.USERS);
-  data.forEach((datum) => {
+  data.forEach((d) => {
     const teamMember = new User();
-    teamMember.fromData(datum);
+    teamMember.fromData(d);
     teamMembers.push(teamMember);
   });
 }
 
-let userId = 0
-if (LocalStorage.exists(LocalStorage.USER_ID)) {
-  userId = LocalStorage.get(LocalStorage.USER_ID)
-  console.log(typeof userId)
+let userId = 0;
+if (LocalStorage.exists(LocalStorage.USER_ID)) { // get the current user id
+  userId = LocalStorage.get(LocalStorage.USER_ID);
 }
 
 
 const addTeamMember = (name, email) => { // add a team member to the list 
-  teamMembers.push(new User(++userId, name, email))
+  teamMembers.push(new User(++userId, name, email));
   LocalStorage.set(LocalStorage.USER_ID, userId);
   LocalStorage.set(LocalStorage.USERS, teamMembers);
 };
 
 const columns = [ // columns to show in the data grid
-  { field: 'id', headerName: 'ID', width: 50},
   { field: 'name', headerName: 'Name', width: 300, editable: false},
   { field: 'email', headerName: 'Email', width: 300, editable: false}
 ];
@@ -142,7 +140,10 @@ export function teamMemberModal(open, setOpen, name, setName, email, setEmail, n
               variant="contained" 
               onClick={() => {
                 addTeamMember(name, email); // otherwise add the team member and close the popup
-                
+                setName('');
+                setNameError([true, '']);
+                setEmail('');
+                setEmailError([true, '']);
                 handleClose();
               }}
               disabled={nameError[0] || emailError[0]} // add button is disabled if input in invalid
