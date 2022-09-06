@@ -1,5 +1,5 @@
 class Task {
-    constructor(taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[] ){
+    constructor(taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[], priority="" ){
         this._taskName = taskName;
         this._taskType = taskType;
         this._points = points;
@@ -7,6 +7,7 @@ class Task {
         this._desc = description;
         this._tag = tag;
         this._assignees = assignees;
+        this._priority = priority;
     }
 
     addAssignee(newAssignee){
@@ -37,6 +38,10 @@ class Task {
         this._tag = newTag;
     }
 
+    setPriority(newPriority){
+        this._priority = newPriority;
+    }
+
     getTaskName(){
         return this._taskName;
     }
@@ -63,6 +68,10 @@ class Task {
 
     getTimeLog(){
         return this._timeLog;
+    }
+
+    getPriority(){
+        return this._priority;
     }
 
     fromData(data){
