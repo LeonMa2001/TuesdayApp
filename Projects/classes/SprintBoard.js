@@ -11,10 +11,18 @@ class SprintBoard {
     get endDate() {return this._endDate;}
     get tasks() {return this._tasks;}
 
+<<<<<<< HEAD:Projects/classes/SprintBoard.js
     set sprintName(name) { this._sprintName = name; }
     set startDate(date) { this._startDate = date; }
     set endDate(date) { this._endDate = date; }
     length() { return this._tasks.length; }
+=======
+    set sprintName(name) {this._sprintName = name;}
+    set startDate(date) {this._startDate = date;}
+    set endDate(date) {this._endDate = date;}
+
+    length() {return this._tasks.length;}
+>>>>>>> 17567feefbd433ac602eddbc98763ca1b62d85a3:Projects/src/sprintBoard.js
 
     // add task method
 
