@@ -107,6 +107,7 @@ createData(3, 'Example story 3', 'Testing', 'Low', 1),
 //while (i = 0; i < task.length; i++){
 //      rows[i] = createData(task.getId(), task.getTaskName(), task.getTag(), task.getPriority(), task.getPoints());
 //}
+//
 
 function CustomToolbar() {
   return (
