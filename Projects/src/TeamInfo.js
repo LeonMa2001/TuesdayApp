@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { Button, Typography, TextField, Modal, IconButton, Box, Grid, Item } from '@mui/material';
+import { Button, Typography, TextField, Modal, IconButton, Box, Grid } from '@mui/material';
 
 class User { // dummy user class for testing only
   constructor(id, name, email) {
@@ -137,11 +137,6 @@ export function teamMemberModal(open, setOpen, name, setName, email, setEmail, n
               color='primary' 
               variant="contained" 
               onClick={() => {
-                const memberDuplicateCheck = teamDuplicateCheck(name, email);
-                if (memberDuplicateCheck) {
-                  alert(memberDuplicateCheck); // alert if there is a duplicate
-                  return;
-                }
                 addTeamMember(name, email); // otherwise add the team member and close the popup
                 handleClose();
               }}
