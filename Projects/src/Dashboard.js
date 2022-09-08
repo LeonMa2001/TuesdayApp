@@ -2,21 +2,10 @@ import * as React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
+import { Box, Toolbar, List, Typography, Divider, IconButton, Container, Grid } from '@mui/material';
 import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import ListItems from './listItems';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ProductItemsDataGrid from './ProductItemsDataGrid';
@@ -88,8 +77,13 @@ function DisplayPage(page) {
 }
 
 const Add = (page) => {
+  const [open, setOpen] = React.useState(false);
+  const [name, setName] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [nameError, setNameError] = React.useState([true, ''])
+  const [emailError, setEmailError] = React.useState([true, ''])
   if (page === "team") {
-    return teamMemberModal()
+    return teamMemberModal(open, setOpen, name, setName, email, setEmail, nameError, setNameError, emailError, setEmailError)
   }
   return (
     <IconButton color="inherit">
@@ -105,10 +99,7 @@ function DashboardContent() {
     setOpen(!open);
   };
 
-  const setPageName = (page) => {
-    setPage(page);
-    console.log(page);
-  }
+  const setPageName = (page) => { setPage(page); }
 
   return (
     <ThemeProvider theme={mdTheme}>
