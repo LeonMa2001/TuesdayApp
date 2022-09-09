@@ -1,7 +1,7 @@
-import User from './User.js.js';
+import UserData from './UserData.js';
 
-class Task {
-    constructor(id="", taskName="", taskType="", points=null, status=null, description="", tag=null, assignees=[]){
+class TaskData {
+    constructor(id="", taskName="", taskType="", priority="", points=null, status=null, description="", tag=null, assignees=[]){
         this._id = id;
         this._taskName = taskName;
         this._taskType = taskType;
@@ -10,6 +10,7 @@ class Task {
         this._desc = description;
         this._tag = tag;
         this._assignees = assignees;
+        this._priority = priority;
     }
 
     addAssignee(newAssignee){ this._assignees.add(newAssignee); }
@@ -19,6 +20,10 @@ class Task {
     set status(newStatus){ this._status = newStatus; }
     set desc(newDesc){ this._desc = newDesc; }
     set tag(newTag){ this._tag = newTag;}
+    set priority(newPriority){ this._priority = newPriority; }
+    set assignees(assigneeList){ this._assignees = assigneeList}
+    set id(id) {this._id = id}
+
 
     get taskName(){ return this._taskName; }
     get taskType(){ return this._taskType; }
@@ -27,13 +32,19 @@ class Task {
     get desc(){ return this._desc; }
     get tag(){ return this._tag; }
     get timeLog(){ return this._timeLog; }
+    get priority(){ return this._priority; }
+    get assignees(){ return this._assigness; }
+    get id(){ return this._id }
 
-    fromData(data){
-        const users = data._assignees.map((user) => {
-            return new User(user._name, user._email, user._timeLog);
-        });
-        return new Task(taskName=data._taskName, taskType=data._taskType, points=data._points, status=data._status, description=data._description, tag=data._tag, assignees=users);
+    static fromData(dataList){
+        return dataList.map(data => {
+            /*
+            const users = data._assignees.map((user) => {
+                return new UserData(user._name, user._email, user._timeLog);
+            });*/
+            return new TaskData(data._id, data._taskName, data._taskType, data._priority, data._points, data._status, data._description, data._tag, data._assignees);
+        })
     }
 }
 
-export default Task;
+export default TaskData;

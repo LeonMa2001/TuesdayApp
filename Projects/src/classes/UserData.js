@@ -1,4 +1,4 @@
-class User {
+class UserData {
     constructor(id = '', name = '', email = '', timelog = []){
         this._id = id;
         this._name = name;
@@ -10,14 +10,13 @@ class User {
     get email(){ return this._email; }
     get id() {return this._id; }
 
-    fromData(data){
-        this._id = data._id;
-        this._name = data._name;
-        this._email = data._email;
-        this._timeLog = [];
+    static fromData(dataList){
+        return dataList.map(data => {
+            return new UserData(data._id, data._name, data._email, [])
+        })
     }
 
     createData() { return {id: this._id, name: this._name, email: this._email}; }
 }
 
-export default User;
+export default UserData;

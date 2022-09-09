@@ -9,44 +9,6 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const data = [
-    {
-        id: 1,
-        name: "Example story 1",
-        tag: "Database",
-        priority: "High",
-        storyPoints: 5,
-        assignee: null,
-        status: "Not Started",
-        timeLog: null,
-        type: "User Story",
-        description: "Example user story\n\n\n\n\nyes yes very cool"
-    },
-    {
-        id: 2,
-        name: "Example story 2",
-        tag: "User Interface",
-        priority: "Medium",
-        storyPoints: 2,
-        assignee: null,
-        status: "In Progress",
-        timeLog: null,
-        type: "Bug",
-        description: "Even cooler user story"
-    },
-    {
-        id: 3,
-        name: "Example story 3",
-        tag: "Testing",
-        priority: "Low",
-        storyPoints: 5,
-        assignee: null,
-        status: "Completed",
-        timeLog: null,
-        type: "User Story",
-        description: "Done :)"
-    }
-]
 
 // TODO (possibly) make this more readable by making it an object
 // Human text bound to the object property as well as a redundency message
@@ -54,11 +16,11 @@ const data = [
 const Fields = [
     ["Tag", "tag", "N/A", () => false, ""],
     ["Priority", "priority", "N/A", () => false, ""],
-    ["Story Points", "storyPoints", "N/A", (value) => value < 0 || value > 9, "Story Points must be between 0 and 9"],
-    ["Assignee", "assignee", "Not Assigned", () => false, ""],
+    ["Story Points", "points", "N/A", (value) => value < 0 || value > 9, "Story Points must be between 0 and 9"],
+    ["Assignee", "assignees", "Not Assigned", () => false, ""],
     ["Status", "status", "N/A", () => false, ""],
-    ["Type", "type", "N/A", () => false, ""],
-    ["Description", "description", "N/A", () => false, ""],
+    ["Type", "taskType", "N/A", () => false, ""],
+    ["Description", "desc", "N/A", () => false, ""],
     ["Time Log", "timeLog", "Not setup", () => false, ""]
 ]
 
@@ -66,32 +28,34 @@ const SelectFields = {
     priority: ["Low", "Medium", "High", "Critical"],
     tag: ["Database", "User Interface", "Testing"],
     status: ["Not Started", "In Progress", "Completed"],
-    assignee: ["Aayush S", "Ari F", "Jeffrey Y", "Leon M", "Samir G"], // TODO change this to be dynamic
-    type: ["User Story", "Bug"]
+    assignees: ["Not Implemented"], // TODO next sprint!
+    taskType: ["User Story", "Bug"]
 }
+
 
 class Task extends React.Component {
     constructor(props) {
         super(props)
+        console.log(this.props.data)
         this.state = {
             editing: props.editing ?? false, // nullish coalescing operator (left if not null/undefined, otherwise right)
-            ...data[this.props.rowID] // spread operator (thanks FIT2102!)
+            data: this.props.data
         } 
 
         this.handleInputChange.bind(this)
     }
 
+
     toggleEditing() {
-        if (this.state.editing) { // Save the data (TODO)
+        if (this.state.editing) { 
             // Check if any fields are erroring
             const isValid = Fields.reduce((acc, item) => {
-                return acc && !item[3](this.state[item[1]]) // if any errors, this will return false
+                return acc && !item[3](this.state.data[item[1]]) // if any errors, this will return false
             }, true)
 
             if (isValid) {
-                console.log("[DEBUG] Editing stopped. Data to save:")
-                console.log(this.state)
                 this.setState({editing: false})
+                this.props.saveInfo(this.state.data)
             }
         }
         else { // begin editing
@@ -101,19 +65,21 @@ class Task extends React.Component {
 
     // Keep track of values when they get updated. this.state[] will have the current value of every field.
     handleInputChange(event) {
+        this.state.data[event.target.id ?? event.target.name] = event.target.value
         this.setState({ 
-            [event.target.id ?? event.target.name]: event.target.value
+            data: this.state.data
         })
     }
 
+    // Header is the only field that is required, so handle it separately:
     parseHeader() {
         if (this.state.editing) {
             return (
                 <Grid item xs={8} sx={{display: "flex", alignItems: "center"}}>
-                    <TextField id={"name"} variant="outlined" fullWidth defaultValue={this.state["name"] ?? ""} 
+                    <TextField id={"taskName"} variant="outlined" fullWidth defaultValue={this.state.data.taskName ?? ""} 
                     onChange={this.handleInputChange.bind(this)} 
-                    error={this.state.name.length == 0} 
-                    helperText={this.state.name.length == 0 ? "Story must have a name" : ""} 
+                    error={this.state.data.taskName.length == 0} 
+                    helperText={this.state.data.taskName.length == 0 ? "Story must have a name" : ""} 
                     />
                 </Grid>
             )
@@ -129,23 +95,23 @@ class Task extends React.Component {
                     sx={{m:1}}
                 >
                 {/* Task Name */}
-                {this.state.name} 
+                {this.state.data.taskName} 
                 </Typography> 
             </Grid>
         )
     }
 
 
-
+    // Parse the rest of the data and return either text or an editing box depending on type
     parseData() {
         return Fields.map((item) => { 
             if (this.state.editing) {
                 let editField;
                 // Create drop-down lists for the required options
-                if (["status", "type", "priority", "assignee", "tag"].includes(item[1])) {
+                if (["status", "taskType", "priority", "assignees", "tag"].includes(item[1])) {
                     editField = (
                         <FormControl fullWidth>
-                            <Select id={item[1]} name={item[1]} onChange={this.handleInputChange.bind(this)} value={this.state[item[1]] ?? ""}>
+                            <Select id={item[1]} name={item[1]} onChange={this.handleInputChange.bind(this)} value={this.state.data[item[1]] ?? ""}>
                                 {/* Map the options specified in SelectFields to options for this Select */}
                                 {SelectFields[item[1]].map((curItem) => {
                                     return <MenuItem key={curItem} value={curItem}>{curItem}</MenuItem>
@@ -154,12 +120,13 @@ class Task extends React.Component {
                         </FormControl>
                     )
                 }
+                // Otherwise use text boxes
                 else {
                     editField = (
-                        <TextField id={item[1]} variant="outlined" fullWidth defaultValue={this.state[item[1]] ?? ""} 
+                        <TextField id={item[1]} variant="outlined" fullWidth defaultValue={this.state.data[item[1]] ?? ""} 
                             onChange={this.handleInputChange.bind(this)} 
-                            error={item[3](this.state[item[1]])} 
-                            helperText={item[3](this.state[item[1]]) ? item[4] : ""}
+                            error={item[3](this.state.data[item[1]])} 
+                            helperText={item[3](this.state.data[item[1]]) ? item[4] : ""}
                             multiline={item[1] == "description"} // this is bad, fix this
                         />
                     )
@@ -176,6 +143,7 @@ class Task extends React.Component {
                 </Grid>
                 )
             }
+            // Not editing so just put the actual text
             return (
             <Grid item key={item[0]} xs ={5} sx={{m:1}}>
                 <div>
@@ -183,7 +151,7 @@ class Task extends React.Component {
                         {item[0]}
                     </Typography>
                     <Typography variant="body1" style={{whiteSpace: 'pre-wrap'}} /* handle newlines in the description field */> 
-                        {this.state[item[1]] ?? item[2] /* If no data (null or undefined) use redundency message*/}
+                        {this.state.data[item[1]] ?? item[2] /* If no data (null or undefined) use redundency message*/}
                     </Typography>
                 </div>
             </Grid>)

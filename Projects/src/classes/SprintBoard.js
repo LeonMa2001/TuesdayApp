@@ -16,11 +16,11 @@ class SprintBoard {
     set endDate(date) { this._endDate = date; }
     length() { return this._tasks.length; }
 
-    // add task method
+    // TODO add task method
 
-    // delete task method
+    // TODO delete task method
 
-    // fromData
+    // TODO fromData
 }
 
 

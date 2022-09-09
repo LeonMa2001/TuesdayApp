@@ -1,31 +1,9 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { Button, Typography, TextField, Modal, IconButton, Box, Grid } from '@mui/material';
-import LocalStorage from './classes/LocalStorage';
-import User from './classes/User';
-
-const teamMembers = [];
-if (LocalStorage.exists(LocalStorage.USERS)) { // get local storage data for users
-  const data = LocalStorage.get(LocalStorage.USERS);
-  data.forEach((d) => {
-    const teamMember = new User();
-    teamMember.fromData(d);
-    teamMembers.push(teamMember);
-  });
-}
-
-let userId = 0;
-if (LocalStorage.exists(LocalStorage.USER_ID)) { // get the current user id
-  userId = LocalStorage.get(LocalStorage.USER_ID);
-}
+import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
 
 
-const addTeamMember = (name, email) => { // add a team member to the list 
-  teamMembers.push(new User(++userId, name, email));
-  LocalStorage.set(LocalStorage.USER_ID, userId);
-  LocalStorage.set(LocalStorage.USERS, teamMembers);
-};
+
 
 const columns = [ // columns to show in the data grid
   { field: 'name', headerName: 'Name', width: 300, editable: false},
@@ -42,136 +20,158 @@ const validateEmail = (email) => { // Validate the email
 }; 
 
 // Exporting the adding team member popup
-export function teamMemberModal(open, setOpen, name, setName, email, setEmail, nameError, setNameError, emailError, setEmailError) {
-  const handleOpen = () => { setOpen(true); }; // opens the popup
-  const handleClose = () => { setOpen(false); }; // closes the popup
 
-  const nameChanged = (e) => { // changes the stored name property
-    setName(e.target.value);
-    let error = false;
-    let description = '';
-    if (e.target.value == '') { // make sure name is not blank
-      error = true;
-      description = 'Invalid name - cannot be blank';
+export class TeamMemberModal extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: this.props.open,
+      name: "",
+      email: "",
+      nameError: [],
+      emailError: [],
     }
-    for (let i in teamMembers){ // make sure name is not already in team
-      const member = teamMembers[i];
+    
+    // Credit: MUI 
+    this.popupStyle = { // style for the popup (taken directly from mui)
+      position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+      width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4,
+    };
+  
+  }
+
+
+  toggleState = () => {this.setState({open: !this.state.open})};
+
+  // Handles when name field is changed
+  nameChanged = (e) => {
+    this.setState({name: e.target.value});
+    let error = false;
+    let description = "";
+    if (e.target.value == "") { // Name cannot be blank
+      error = true;
+      description = "Invalid name - cannot be blank";
+    }
+    for (let i in this.props.teamMembers) { // Name cannot already exist
+      const member = this.props.teamMembers[i]
       if (member.name === e.target.value) {
         error = true;
-        description = 'Invalid name - name already exists';
+        description = "Invalid name - name already exists";
         break;
       }
     }
-    setNameError([error, description]); // changes error property
-  };
+    this.setState({nameError: [error, description]}) // Update error state
+  }
 
-  const emailChanged = (e) => { // changes the stored email property
-    setEmail(e.target.value);
+  emailChanged = (e) => {
+    this.setState({email: e.target.value});
     let error = false;
     let description = '';
-    if (!validateEmail(e.target.value)) { // validate the email
+    if (!validateEmail(e.target.value)) { // Email is invalid
       error = true;
       description = 'Invalid email - invalid format';
     }
-    for (let i in teamMembers){ // make sure email is not already in team
-      const member = teamMembers[i];
+    for (let i in this.props.teamMembers){ // Email cannot already exist
+      const member = this.props.teamMembers[i];
       if (member.email === e.target.value) {
         error = true;
         description = 'Invalid email - email already exists';
         break;
       }
     }
-    setEmailError([error, description]); // updates the error state
-  };
+    this.setState({emailError: [error, description]}); // Update error state
+  }
 
-  const popupStyle = { // style for the popup (taken directly from mui)
-    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-    width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4,
-  };
-
-  return (
-    <div>
-      <IconButton color="inherit" onClick={handleOpen}>
-        <AddCircleIcon />
-      </IconButton>
-      <Modal 
-          open={open} // open variable tells the popup whether to be open or not
-          onClose={handleClose} // handles the closure of the popup
-          aria-labelledby="modal-modal-title" // id of the title
-          > 
-        <Box sx={popupStyle}>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} style={{textAlign: "center"}}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add Team Member
-              </Typography>
-            </Grid>
-            <Grid item xs={12} >
-              <TextField 
-              id="outlined-basic" 
-              label="Name"
-              variant="outlined" 
-              required
-              fullWidth 
-              value={name} 
-              onChange={nameChanged}
-              error={nameError[0]} 
-              helperText={nameError[0] ? nameError[1] : ''}
-              autoComplete='off'
+  render() {
+    return (
+      <div>
+        <Modal 
+            open={this.props.open} // open variable tells the popup whether to be open or not
+            onClose={this.toggleState} // handles the closure of the popup
+            aria-labelledby="modal-modal-title" // id of the title
+            > 
+          <Box sx={this.popupStyle}>
+            <Grid container spacing={3} alignItems="center">
+              <Grid item xs={12} style={{textAlign: "center"}}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                Add Team Member
+                </Typography>
+              </Grid>
+              <Grid item xs={12} >
+                <TextField 
+                id="outlined-basic" 
+                label="Name"
+                variant="outlined" 
+                required
+                fullWidth 
+                value={this.state.name} 
+                onChange={this.nameChanged}
+                error={this.state.nameError[0]} 
+                helperText={this.state.nameError[0] ? this.state.nameError[1] : ''}
+                autoComplete='off'
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                id="outlined-basic" 
+                label="Email" 
+                variant="outlined" 
+                required 
+                fullWidth 
+                value={this.state.email} 
+                onChange={this.emailChanged}
+                error={this.state.emailError[0]}
+                helperText={this.state.emailError[0] ? this.state.emailError[1] : ''}
+                autoComplete='off'
               />
+              </Grid>
+              <Grid item xs={12} style={{textAlign: "center"}}>
+                <Button 
+                color='primary' 
+                variant="contained" 
+                onClick={() => this.props.handleTeamMemberAdd(this.state.name, this.state.email)}
+                disabled={this.state.nameError[0] || this.state.emailError[0]} // add button is disabled if input in invalid
+                >
+                Add
+                </Button>
+                <Button
+                color='error'
+                variant='contained'
+                onClick={() => this.props.handleTeamMemberAdd("", "")}
+                >
+                  Cancel
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <TextField 
-              id="outlined-basic" 
-              label="Email" 
-              variant="outlined" 
-              required 
-              fullWidth 
-              value={email} 
-              onChange={emailChanged}
-              error={emailError[0]}
-              helperText={emailError[0] ? emailError[1] : ''}
-              autoComplete='off'
-            />
-            </Grid>
-            <Grid item xs={12} style={{textAlign: "center"}}>
-              <Button 
-              color='primary' 
-              variant="contained" 
-              onClick={() => {
-                addTeamMember(name, email); // otherwise add the team member and close the popup
-                setName('');
-                setNameError([true, '']);
-                setEmail('');
-                setEmailError([true, '']);
-                handleClose();
-              }}
-              disabled={nameError[0] || emailError[0]} // add button is disabled if input in invalid
-              >
-              Add
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
-    </div>
-  )
-};
+          </Box>
+        </Modal>
+      </div>
+    )
+  }
+}
+
+
 
 // Exporting the main datagrid
-export default function TeamInfo() {
-  return (
-    <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={teamMembers.map((member) => { return member.createData() })}
-        columns={columns}
-        pageSize={5}
-        autoHeight
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-        disableSelectionOnClick
-        experimentalFeatures={{ newEditingApi: true }}
-      />
-    </Box>
-  );
+export default class TeamInfo extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return (
+      <Box sx={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={this.props.teamMembers.map((member) => { return member.createData() })}
+          columns={columns}
+          pageSize={5}
+          autoHeight
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          disableSelectionOnClick
+          experimentalFeatures={{ newEditingApi: true }}
+        />
+      </Box>
+    )
+  }
 }

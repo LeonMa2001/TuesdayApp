@@ -9,19 +9,10 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItems from './listItems';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ProductItemsDataGrid from './ProductItemsDataGrid';
-import TeamInfo, { teamMemberModal } from './TeamInfo';
-
-
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © Group 5 FIT2101 '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import TeamInfo, { TeamMemberModal } from './TeamInfo';
+import LocalStorage from './classes/LocalStorage';
+import TaskData from './classes/TaskData.js';
+import UserData from './classes/UserData.js';
 
 const drawerWidth = 240;
 
@@ -71,116 +62,211 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-function DisplayPage(page) {
-  if (page == "product-backlog") { return <ProductItemsDataGrid />}
-  return <TeamInfo />
-}
-
-const Add = (page) => {
-  const [open, setOpen] = React.useState(false);
-  const [name, setName] = React.useState('')
-  const [email, setEmail] = React.useState('')
-  const [nameError, setNameError] = React.useState([true, ''])
-  const [emailError, setEmailError] = React.useState([true, ''])
-  if (page === "team") {
-    return teamMemberModal(open, setOpen, name, setName, email, setEmail, nameError, setNameError, emailError, setEmailError)
-  }
+function Copyright(props) {
   return (
-    <IconButton color="inherit">
-          <AddCircleIcon />
-    </IconButton>
-  )
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © Group 5 FIT2101 '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
 }
 
-function DashboardContent() {
-  const [open, setOpen] = React.useState(true);
-  const [page, setPage] = React.useState("product-backlog");
-  const toggleDrawer = () => {
-    setOpen(!open);
+
+const Tasks = LocalStorage.exists(LocalStorage.TASKS) ? TaskData.fromData(LocalStorage.get(LocalStorage.TASKS)) : []
+const TeamMembers = LocalStorage.exists(LocalStorage.USERS) ? UserData.fromData(LocalStorage.get(LocalStorage.USERS)) : []
+
+let userID = LocalStorage.exists(LocalStorage.USER_ID) ? LocalStorage.get(LocalStorage.USER_ID) : 0
+
+function addTeamMember(name, email) {
+  TeamMembers.push(new UserData(++userID, name, email))
+  LocalStorage.set(LocalStorage.USER_ID, userID)
+  LocalStorage.set(LocalStorage.USERS, TeamMembers)
+}
+
+
+class DashboardContent extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      open: true,
+      page: "product-backlog",
+      displayTask: "",
+      editingTask: false,
+      creatingTeam: false,
+    }
+  }
+
+  handleTeamMemberAdd = (name, email) => {
+    this.setState({creatingTeam: false})
+    if (name != "" && email != "" ) {
+      addTeamMember(name, email);
+    }
+  }
+
+  displayPage() {
+    if (this.state.page == "product-backlog") {
+      return (
+        <ProductItemsDataGrid data={Tasks} editing={this.state.editingTask} displayItem={this.state.displayTask} saveInfo={this.saveInfo} handleItemClick={this.handleItemClick}/>
+      )
+    }
+    return (
+      <React.Fragment>
+        <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
+        <TeamInfo teamMembers={TeamMembers}/>
+      </React.Fragment>
+    )
+  }
+
+  toggleDrawer = () => {
+    this.setState({open: !this.state.open})
   };
 
-  const setPageName = (page) => { setPage(page); }
+  setPageName = (page) => {
+    this.setState({page})
+  };
 
-  return (
-    <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: '20px', // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
+  createNewTask = () => {
+    let taskID = LocalStorage.exists(LocalStorage.TASK_ID) ? LocalStorage.get(LocalStorage.TASK_ID) : 0;
+    LocalStorage.set(LocalStorage.TASK_ID, ++taskID);
+
+    this.setState({displayTask: taskID, editingTask: true});
+  }
+
+  getTaskIndex = (taskID) => {
+    for (let i in Tasks) {
+      if (Tasks[i].id == taskID) {
+        return i
+      }
+    }
+    return -1
+  }
+
+  saveInfo = (info) => {
+    let taskIndex = this.getTaskIndex(this.state.displayTask);
+    if (taskIndex == -1) {
+      Tasks.push(info)
+    }
+    else {
+      Tasks[taskIndex] = info;
+    }
+    LocalStorage.set(LocalStorage.TASKS, Tasks);
+  }
+
+  editTask = (rowID) => {
+    this.setState({displayTask: rowID, editingTask: true})
+  }
+
+  // Create a pop-up when a row is clicked
+  // Returns to the main dashboard if rowID is not defined / null
+  handleItemClick = (rowID, editing=false) => {
+    this.setState({displayTask: rowID, editingTask: editing})
+  };
+  
+  // Returns control to the Dashboard
+  returnControl = () =>  {
+    handleItemClick();
+  };
+
+  handleAddButtonClick() {
+    if (this.state.page === "team") {
+      this.setState({creatingTeam: true})
+    }
+    else if (this.state.page === "product-backlog") {
+      this.createNewTask();
+    }
+  }
+
+  AddButton() {
+    return (
+      <React.Fragment>
+        <IconButton color="inherit" onClick={() => this.handleAddButtonClick()}>
+              <AddCircleIcon />
+        </IconButton>
+      </React.Fragment>
+    )
+  }
+
+  render() {
+    return (
+      <ThemeProvider theme={mdTheme}>
+        <Box sx={{ display: 'flex' }}>
+          <CssBaseline />
+          <AppBar position="absolute" open={this.state.open}>
+            <Toolbar
               sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
+                pr: '20px', // keep right padding when drawer closed
               }}
             >
-              <MenuIcon />
-            </IconButton> 
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={this.toggleDrawer}
+                sx={{
+                  marginRight: '36px',
+                  ...(this.state.open && { display: 'none' }),
+                }}
+              >
+                <MenuIcon />
+              </IconButton> 
+              <Typography
+                component="h1"
+                variant="h6"
+                color="inherit"
+                noWrap
+                sx={{ flexGrow: 1 }}
+              >
+                {/* Page Header */}
+                Product Backlog  
+              </Typography> 
+              {this.AddButton()}
+            </Toolbar>
+          </AppBar>
+          <Drawer variant="permanent" open={this.state.open}>
+            <Toolbar
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                px: [1],
+              }}
             >
-              {/* Page Header */}
-              Product Backlog  
-            </Typography> 
-            {Add(page)}
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
+              <IconButton onClick={this.toggleDrawer}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </Toolbar>
+            <Divider />
+            <List component="nav">
+              <ListItems handleClick={this.setPageName} />
+            </List>
+          </Drawer>
+          <Box
+            component="main"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? theme.palette.grey[100]
+                  : theme.palette.grey[900],
+              flexGrow: 1,
+              height: '100vh',
+              overflow: 'auto',
             }}
           >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List component="nav">
-            <ListItems handleClick={setPageName} />
-          </List>
-        </Drawer>
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <Toolbar />
-          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              {/* Product Items Data Grid */}
-              
-              <Grid item xs={12}>
-                {DisplayPage(page)}
+            <Toolbar />
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+              <Grid container spacing={3}>             
+                <Grid item xs={12}>
+                  {this.displayPage()}
+                </Grid>
               </Grid>
-            </Grid>
-            <Copyright sx={{ pt: 4 }} />
-          </Container>
+              <Copyright sx={{ pt: 4 }} />
+            </Container>
+          </Box>
         </Box>
-      </Box>
-    </ThemeProvider>
-  );
+      </ThemeProvider>
+    );
+  }
 }
 
 export default function Dashboard() {

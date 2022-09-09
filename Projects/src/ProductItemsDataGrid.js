@@ -11,21 +11,21 @@ import { styled } from '@mui/material/styles';
 import {
     DataGrid,
     GridToolbarContainer,
-    GridToolbarFilterButton,
-    getGridNumericOperators,
+    GridToolbarFilterButton
 } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import Task from './Task.js'
+import TaskData from "./classes/TaskData.js"
 
-// https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
 
+// Button credit to https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
 
 const columnsFunc = (renderEditButton) => [
     {
         field: 'name',
         headerName: 'Story Name',
         width: 300,
-        editable: true,
+        editable: false,
         sortable: false,
         filterable: false,
     },
@@ -62,62 +62,24 @@ const columnsFunc = (renderEditButton) => [
     }
 ];
 
-const filterOperators = getGridNumericOperators().filter(
-  (operator) => operator.value === '>' || operator.value === '<',
-);
 
-function createData(id, name, tag, priority, points) {
+function createData(data) {
     return {
       id: data.id,
-      name: data.name,
+      name: data.taskName,
       tag: data.tag,
       priority: data.priority,
-      storyPoints: data.storyPoints
+      points: data.points
     };
   }
-
-/*
-  Dummy data: replace with calls to back-end
-*/ 
-
-const data = [
-    {
-        id: 1,
-        name: "Example story 1",
-        tag: "Database",
-        priority: "High",
-        storyPoints: 5
-    },
-    {
-        id: 2,
-        name: "Example story 2",
-        tag: "User Interface",
-        priority: "Medium",
-        storyPoints: 2
-    },
-    {
-        id: 3,
-        name: "Example story 3",
-        tag: "Testing",
-        priority: "Low",
-        storyPoints: 5
-    }
-]
-const rows = []
-data.forEach((val) => {rows.push(createData(val))})
 
 
 class ProductItemsDataGrid extends React.Component {
     constructor(props) {
         super(props)
-        this.state = { 
-            displayItem: null,
-            editing: false 
-        }
-
         this.columns = columnsFunc(this.renderEditButton)
-        
     }
+
 
     renderEditButton = (rowID) => {
         return (
@@ -128,11 +90,15 @@ class ProductItemsDataGrid extends React.Component {
                     size="small"
                     onClick = {(event) => {
                         event.stopPropagation()
-                        this.handleItemClick(rowID.id, true)
+                        this.props.handleItemClick(rowID.id, true)
                     }}
                 ><EditIcon /></Button>
             </strong>
         )
+    }
+    
+    getRows = (data) => { 
+        return data.map(row => createData(row))
     }
 
     // Generate the data grid with the provided information
@@ -145,8 +111,8 @@ class ProductItemsDataGrid extends React.Component {
                     LoadingOverlay: LinearProgress,
                     NoRowsOverlay: CustomNoRowsOverlay,
                   }}
-                  rows={rows}
-                  columns={columns}
+                  rows={this.getRows(this.props.data)}
+                  columns={this.columns}
                   pageSize={5}
                   autoHeight
                   disableColumnMenu
@@ -167,25 +133,20 @@ class ProductItemsDataGrid extends React.Component {
                       },
                     },
                   }}
-                onRowClick = { (rowData) => this.handleItemClick(rowData.id) }
+                onRowClick = { (rowData) => this.props.handleItemClick(rowData.id) }
               />
             </Box>
         )
     }
 
-    returnControl() {
-        this.handleItemClick();
+    getCorrectRow() {
+      return this.props.data.filter(task => task.id == this.props.displayItem)[0] ?? new TaskData(this.props.displayItem)
     }
 
-    // Create a pop-up when a row is clicked
-    // Returns to the main dashboard if rowID is not defined / null
-    handleItemClick(rowID, editing=false) {
-        this.setState({ displayItem: rowID, editing: editing});
-    }
-
+   
     displayComponent() {
-        if (this.state.displayItem) {
-            return <Task rowID={this.state.displayItem-1} returnControl={this.handleItemClick.bind(this)} editing={this.state.editing} /> // remove the -1 when having actual data
+        if (this.props.displayItem) {
+            return <Task rowID={this.props.displayItem} returnControl={this.props.handleItemClick} editing={this.props.editing} data={this.getCorrectRow()} saveInfo={this.props.saveInfo}/>
         }
         return this.generateDataGrid();
 
@@ -202,12 +163,6 @@ class ProductItemsDataGrid extends React.Component {
 }
 
 export default ProductItemsDataGrid;
-const rows = [
-createData(1, 'Example story 1', 'Database', 'High', 5),
-createData(2, 'Example story 2', 'User Interface', 'Medium', 2),
-createData(3, 'Example story 3', 'Testing', 'Low', 1),
-];
-
 
 function CustomToolbar() {
   return (
@@ -286,8 +241,4 @@ function CustomNoRowsOverlay() {
       <Box sx={{ mt: 1 }}>No Rows</Box>
     </StyledGridOverlay>
   );
-}
-
-export default function DataGridProductItems() {
-  
 }
