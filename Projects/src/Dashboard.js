@@ -107,7 +107,7 @@ class DashboardContent extends React.Component {
   displayPage() {
     if (this.state.page == "product-backlog") {
       return (
-        <ProductItemsDataGrid data={Tasks} editing={this.state.editingTask} displayItem={this.state.displayTask} saveInfo={this.saveInfo} handleItemClick={this.handleItemClick}/>
+        <ProductItemsDataGrid data={Tasks} teamMembers={TeamMembers} editing={this.state.editingTask} displayItem={this.state.displayTask} saveInfo={this.saveInfo} handleItemClick={this.handleItemClick}/>
       )
     }
     return (
