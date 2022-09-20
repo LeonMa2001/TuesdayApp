@@ -1,5 +1,5 @@
 class SprintBoard {
-    consturctor(sprintName = "", startDate, endDate, tasks = []) {
+    constructor(sprintName = "", startDate, endDate, tasks = []) {
         this._sprintName = sprintName;
         this._startDate = startDate;
         this._endDate = endDate;
