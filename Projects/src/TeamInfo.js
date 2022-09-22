@@ -34,7 +34,15 @@ export class TeamMemberModal extends React.Component {
   }
 
 
-  toggleState = () => {this.setState({open: !this.state.open})};
+  toggleState = () => {
+    this.setState({ // reset state when state is toggled
+      open: !this.state.open, 
+      name: "",
+      email: "",
+      nameError: [],
+      emailError: [],
+    });
+  }
 
   // Handles when name field is changed
   nameChanged = (e) => {
@@ -122,7 +130,10 @@ export class TeamMemberModal extends React.Component {
                 <Button 
                 color='primary' 
                 variant="contained" 
-                onClick={() => this.props.handleTeamMemberAdd(this.state.name, this.state.email)}
+                onClick={() => {
+                  this.props.handleTeamMemberAdd(this.state.name, this.state.email);
+                  this.toggleState();
+                }}
                 disabled={this.state.nameError[0] || this.state.emailError[0]} // add button is disabled if input in invalid
                 >
                 Add
