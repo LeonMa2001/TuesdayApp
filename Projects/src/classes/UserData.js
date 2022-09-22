@@ -17,6 +17,17 @@ class UserData {
     }
 
     createData() { return {id: this._id, name: this._name, email: this._email}; }
+    
+    getTotalTime(date) {
+        let total = 0;
+        for (let i = 0; i < this._timeLog.length; i++) {
+            const log = this._timeLog[i];
+            if (log.date === date) {
+                total += log.time;
+            }
+        }
+        return total;
+    }
 }
 
 export default UserData;

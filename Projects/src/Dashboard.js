@@ -13,6 +13,7 @@ import TeamInfo, { TeamMemberModal } from './TeamInfo';
 import LocalStorage from './classes/LocalStorage';
 import TaskData from './classes/TaskData.js';
 import UserData from './classes/UserData.js';
+import TeamTimeDashboard from './TeamTimeDashboard';
 
 const drawerWidth = 240;
 
@@ -112,8 +113,25 @@ class DashboardContent extends React.Component {
     }
     return (
       <React.Fragment>
-        <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
-        <TeamInfo teamMembers={TeamMembers}/>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} style={{textAlign: "center"}}>
+            <Typography id="modal-modal-title" variant="h6" component="h3">
+              Team Timelog Graph
+            </Typography>
+          </Grid>
+          <Grid item xs={2}></Grid>
+          <Grid item xs={8} style={{textAlign: "center"}}>
+            <TeamTimeDashboard teamMembers={TeamMembers}/>
+          </Grid>
+          <Grid item xs={2}></Grid>
+          <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
+          <Grid item xs={12} style={{textAlign: "center"}}>
+            <Typography id="modal-modal-title" variant="h6" component="h3">
+              Team Members
+            </Typography>
+            <TeamInfo teamMembers={TeamMembers}/>
+          </Grid>
+        </Grid>
       </React.Fragment>
     )
   }
