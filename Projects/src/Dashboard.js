@@ -75,7 +75,7 @@ function Copyright(props) {
 
 
 const Tasks = LocalStorage.exists(LocalStorage.TASKS) ? TaskData.fromData(LocalStorage.get(LocalStorage.TASKS)) : []
-const TeamMembers = LocalStorage.exists(LocalStorage.USERS) ? UserData.fromData(LocalStorage.get(LocalStorage.USERS)) : []
+let TeamMembers = LocalStorage.exists(LocalStorage.USERS) ? UserData.fromData(LocalStorage.get(LocalStorage.USERS)) : []
 
 let userID = LocalStorage.exists(LocalStorage.USER_ID) ? LocalStorage.get(LocalStorage.USER_ID) : 0
 
@@ -83,6 +83,17 @@ function addTeamMember(name, email) {
   TeamMembers.push(new UserData(++userID, name, email))
   LocalStorage.set(LocalStorage.USER_ID, userID)
   LocalStorage.set(LocalStorage.USERS, TeamMembers)
+}
+
+function deleteTeamMember(id) {
+  const newTeam = [];
+  for (let i = 0; i < TeamMembers.length; i++){
+    if (TeamMembers[i].id !== id) {
+      newTeam.push(TeamMembers[i]);
+    }
+  }
+  TeamMembers = newTeam;
+  LocalStorage.set(LocalStorage.USERS, TeamMembers);
 }
 
 
@@ -102,6 +113,13 @@ class DashboardContent extends React.Component {
     this.setState({creatingTeam: false})
     if (name != "" && email != "" ) {
       addTeamMember(name, email);
+    }
+  }
+
+  handleTeamMemberDelete = (id) => {
+    if (confirm('Are you sure you want to delete this team member?')) {
+      deleteTeamMember(id);
+      this.setState({creatingTeam: false});
     }
   }
 
@@ -129,7 +147,7 @@ class DashboardContent extends React.Component {
             <Typography id="modal-modal-title" variant="h6" component="h3">
               Team Members
             </Typography>
-            <TeamInfo teamMembers={TeamMembers}/>
+            <TeamInfo teamMembers={TeamMembers} handleTeamMemberDelete={this.handleTeamMemberDelete}/>
           </Grid>
         </Grid>
       </React.Fragment>

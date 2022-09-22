@@ -1,14 +1,7 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
-
-
-
-
-const columns = [ // columns to show in the data grid
-  { field: 'name', headerName: 'Name', width: 300, editable: false},
-  { field: 'email', headerName: 'Email', width: 300, editable: false}
-];
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript 
 const validateEmail = (email) => { // Validate the email
@@ -156,6 +149,19 @@ export class TeamMemberModal extends React.Component {
 export default class TeamInfo extends React.Component {
   constructor(props) {
     super(props)
+    this.columns = [ // columns to show in the data grid
+      { field: 'name', headerName: 'Name', width: 300, editable: false},
+      { field: 'email', headerName: 'Email', width: 500, editable: false},
+      { field: 'hours', headerName: 'Total Hours', width: 100, editable: false, type: 'number', align: 'center'},
+      { field: 'delete', type: 'actions', getActions: (params) => [
+          <GridActionsCellItem 
+            icon={<DeleteIcon/>} 
+            onClick={() => this.props.handleTeamMemberDelete(params.id)} 
+            label="Delete" 
+          />
+        ]
+      }
+    ];
   }
 
   render() {
@@ -163,7 +169,7 @@ export default class TeamInfo extends React.Component {
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           rows={this.props.teamMembers.map((member) => { return member.createData() })}
-          columns={columns}
+          columns={this.columns}
           pageSize={5}
           autoHeight
           rowsPerPageOptions={[5]}
