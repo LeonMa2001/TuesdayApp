@@ -1,3 +1,7 @@
+// TeamTimeDashboard.js
+// Last modified: 22/09/22
+// Modifier: Samir Gupta
+
 import React, {Component} from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
 import { Line } from 'react-chartjs-2';

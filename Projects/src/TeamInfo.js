@@ -164,10 +164,10 @@ export default class TeamInfo extends React.Component {
       { field: 'name', headerName: 'Name', width: 300, editable: false},
       { field: 'email', headerName: 'Email', width: 500, editable: false},
       { field: 'hours', headerName: 'Total Hours', width: 100, editable: false, type: 'number', align: 'center'},
-      { field: 'delete', type: 'actions', getActions: (params) => [
+      { field: 'delete', type: 'actions', getActions: (params) => [ // have an action column to delete
           <GridActionsCellItem 
-            icon={<DeleteIcon/>} 
-            onClick={() => this.props.handleTeamMemberDelete(params.id)} 
+            icon={<DeleteIcon/>} // icon to show
+            onClick={() => this.props.handleTeamMemberDelete(params.id)} // delete team member when this icon is clicked
             label="Delete" 
           />
         ]

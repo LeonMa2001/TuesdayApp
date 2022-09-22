@@ -85,15 +85,14 @@ function addTeamMember(name, email) {
   LocalStorage.set(LocalStorage.USERS, TeamMembers)
 }
 
-function deleteTeamMember(id) {
-  const newTeam = [];
-  for (let i = 0; i < TeamMembers.length; i++){
-    if (TeamMembers[i].id !== id) {
-      newTeam.push(TeamMembers[i]);
-    }
-  }
-  TeamMembers = newTeam;
-  LocalStorage.set(LocalStorage.USERS, TeamMembers);
+// Function to delete a team member from the list
+// Params
+// - id: The id of the team member to delete
+function deleteTeamMember(id) { // delete a team member
+  TeamMembers = TeamMembers.filter((member) => { // filter team members based on their id
+    return member.id != id; 
+  });
+  LocalStorage.set(LocalStorage.USERS, TeamMembers); // update local storage
 }
 
 
@@ -116,10 +115,10 @@ class DashboardContent extends React.Component {
     }
   }
 
-  handleTeamMemberDelete = (id) => {
+  handleTeamMemberDelete = (id) => { // deletes a team member
     if (confirm('Are you sure you want to delete this team member?')) {
       deleteTeamMember(id);
-      this.setState({creatingTeam: false});
+      this.setState({creatingTeam: false}); // set a state so that the list of team members re-renders
     }
   }
 
