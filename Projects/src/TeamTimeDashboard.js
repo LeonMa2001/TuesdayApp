@@ -5,7 +5,6 @@
 import React, {Component} from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -25,34 +24,28 @@ export default class TeamTimeDashboard extends Component {
     // Contruct the dashboard
     constructor(props) {
         super(props);
-        const today = dayjs();
-        const prev_week = dayjs().subtract(5, 'day'); // originally set the date to start at 5 days before today and end at today
-        this.state = {
-            start_date: prev_week,
-            end_date: today,
-            dates: [],
-            data: [],
-        };
+        this.dates = [];
+        this.data = [];
     }
 
     // Generate the data set to display on the graph
     __generateDataSet() {
         const dates = [];
         const data = [];
-        let starting_date = this.state.start_date.clone();
-        while (starting_date.format('DD/MM/YY') !== this.state.end_date.add(1, 'day').format('DD/MM/YY')) {
+        let starting_date = this.props.start.clone();
+        while (starting_date.format('DD/MM/YY') !== this.props.end.add(1, 'day').format('DD/MM/YY')) {
             dates.push(starting_date.format('DD/MM')); // add all date strings to array
             data.push(0); // initialise the hours data for each of the dates as 0
             starting_date = starting_date.add(1, 'day'); // add a day to the starting day to continue the loop
         }
         for (let i = 0; i < dates.length; i++) {
             for (let j = 0; j < this.props.teamMembers.length; j++) {
-                data[i] += this.props.teamMembers[j].getTotalTime(dates[i]); // add up the total time spent on a particular date
+                data[i] += this.props.teamMembers[j].getTotalTimeDate(dates[i]); // add up the total time spent on a particular date
             }
         }
         // write into state
-        this.state.data = data;
-        this.state.dates = dates;
+        this.data = data;
+        this.dates = dates;
     }
 
     // render the dashboard
@@ -65,9 +58,9 @@ export default class TeamTimeDashboard extends Component {
                         <DesktopDatePicker // starting date picker
                             label="Start date" 
                             inputFormat="DD/MM/YYYY"
-                            value={this.state.start_date}
-                            onChange={(newValue) => this.setState({start_date: newValue})}
-                            maxDate={this.state.end_date.subtract(1, 'day')} // can't be greater than or equal to the end date
+                            value={this.props.start}
+                            onChange={(newValue) => this.props.setStart(newValue)}
+                            maxDate={this.props.end.subtract(1, 'day')} // can't be greater than or equal to the end date
                             renderInput={(params) => <TextField {...params} /> }
                         />
                     </LocalizationProvider>
@@ -75,9 +68,9 @@ export default class TeamTimeDashboard extends Component {
                         <DesktopDatePicker // ending date picker
                             label="End date"
                             inputFormat="DD/MM/YYYY"
-                            value={this.state.end_date}
-                            onChange={(newValue) => this.setState({end_date: newValue})}
-                            minDate={this.state.start_date.add(1, 'day')} // can't be smaller than or equal to the min date
+                            value={this.props.end}
+                            onChange={(newValue) => this.props.setEnd(newValue)}
+                            minDate={this.props.start.add(1, 'day')} // can't be smaller than or equal to the min date
                             disableFuture // can't be in the future
                             renderInput={(params) => <TextField {...params} /> }
                         />
@@ -87,10 +80,10 @@ export default class TeamTimeDashboard extends Component {
                     <Line // render the line graph
                         datasetIdKey='id'
                         data={{
-                            labels: this.state.dates, // horizontal labels
+                            labels: this.dates, // horizontal labels
                             datasets: [{
                                 id: 1,
-                                data: this.state.data, // data points
+                                data: this.data, // data points
                                 borderColor: 'rgb(53, 162, 235)',
                                 backgroundColor: 'rgba(53, 162, 235, 0.5)',
                             }],

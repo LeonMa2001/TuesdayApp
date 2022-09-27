@@ -187,6 +187,7 @@ export default class TeamInfo extends React.Component {
           checkboxSelection
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
+          onRowClick={(rowData) => this.props.toggleView(rowData.id)}
         />
       </Box>
     )

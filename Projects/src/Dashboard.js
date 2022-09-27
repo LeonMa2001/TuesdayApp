@@ -14,6 +14,8 @@ import LocalStorage from './classes/LocalStorage';
 import TaskData from './classes/TaskData.js';
 import UserData from './classes/UserData.js';
 import TeamTimeDashboard from './TeamTimeDashboard';
+import dayjs from 'dayjs';
+import TeamMemberView from './TeamMemberView';
 
 const drawerWidth = 240;
 
@@ -105,6 +107,10 @@ class DashboardContent extends React.Component {
       displayTask: "",
       editingTask: false,
       creatingTeam: false,
+      viewingTeamMember: false,
+      graphStartDate: dayjs().subtract(5, 'day'),
+      graphEndDate: dayjs(), // initialise the dates
+      viewMember: undefined
     }
   }
 
@@ -120,6 +126,19 @@ class DashboardContent extends React.Component {
       deleteTeamMember(id);
       this.setState({creatingTeam: false}); // set a state so that the list of team members re-renders
     }
+  }
+
+  setStart = (value) => { // set the starting date of the team graphs
+    this.setState({graphStartDate: value});
+  }
+  setEnd = (value) => { // set the end date of the team graphs
+    this.setState({graphEndDate: value});
+  }
+  toggleViewTeamMember = (id=null) => {
+    if (id !== null) {
+      this.setState({viewMember: TeamMembers.find((member) => member.id === id)});
+    }
+    this.setState({viewingTeamMember: !this.state.viewingTeamMember});
   }
 
   displayPage() {
@@ -138,15 +157,18 @@ class DashboardContent extends React.Component {
           </Grid>
           <Grid item xs={2}></Grid>
           <Grid item xs={8} style={{textAlign: "center"}}>
-            <TeamTimeDashboard teamMembers={TeamMembers}/>
+            <TeamTimeDashboard teamMembers={TeamMembers} start={this.state.graphStartDate} end={this.state.graphEndDate} setStart={this.setStart} setEnd={this.setEnd}/>
           </Grid>
           <Grid item xs={2}></Grid>
           <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
+          <TeamMemberView open={this.state.viewingTeamMember} start={this.state.graphStartDate} end={this.state.graphEndDate} toggle={this.toggleViewTeamMember} user={this.state.viewMember}/>
           <Grid item xs={12} style={{textAlign: "center"}}>
             <Typography id="modal-modal-title" variant="h6" component="h3">
               Team Members
             </Typography>
-            <TeamInfo teamMembers={TeamMembers} handleTeamMemberDelete={this.handleTeamMemberDelete}/>
+          </Grid>
+          <Grid item xs={12} style={{textAlign: "center"}}>
+            <TeamInfo teamMembers={TeamMembers} handleTeamMemberDelete={this.handleTeamMemberDelete} toggleView={this.toggleViewTeamMember}/>
           </Grid>
         </Grid>
       </React.Fragment>
