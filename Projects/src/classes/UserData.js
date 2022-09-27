@@ -19,7 +19,7 @@ class UserData {
     createData() { return {id: this._id, name: this._name, email: this._email, hours: this.getTotalTime()}; }
     
     // get the total time worked on tasks on a specific date
-    getTotalTime(date) {
+    getTotalTimeDate(date) {
         let total = 0;
         for (let i = 0; i < this._timeLog.length; i++) {
             const log = this._timeLog[i];
@@ -27,15 +27,15 @@ class UserData {
                 total += log.time;
             }
         }
+        //return 2 // uncomment for dummy values
         return total;
     }
 
     // get the total time worked by this user
     getTotalTime() {
         let total = 0;
-        this._timeLog.forEach(log => {
-            total += log.time;
-        });
+        this._timeLog.forEach(log => total += log.time);
+        //return 10 // uncomment for dummy values
         return total;
     }
 }
