@@ -3,7 +3,7 @@
 // Modifier: Samir Gupta
 
 import React, {Component} from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -16,8 +16,7 @@ ChartJS.register( // registers the chart
     PointElement,
     LineElement,
     Title,
-    Tooltip,
-    Legend
+    Tooltip
 );
 
 export default class TeamTimeDashboard extends Component {

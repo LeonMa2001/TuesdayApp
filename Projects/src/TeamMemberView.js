@@ -1,6 +1,10 @@
+// TeamMemberView.js
+// Last modified: 27/09/22
+// Modifier: Samir Gupta
+
 import React from 'react';
 import { Typography, IconButton, Modal, Box, Grid } from '@mui/material';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -10,8 +14,7 @@ ChartJS.register( // registers the chart
     PointElement,
     LineElement,
     Title,
-    Tooltip,
-    Legend
+    Tooltip
 );
 
 export default class TeamMemberView extends React.Component {
