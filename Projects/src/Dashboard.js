@@ -13,6 +13,8 @@ import TeamInfo, { TeamMemberModal } from './TeamInfo';
 import LocalStorage from './classes/LocalStorage';
 import TaskData from './classes/TaskData.js';
 import UserData from './classes/UserData.js';
+import NewSprintModal, { DisplaySprint, MoveItem } from "./Sprint.js"
+import SprintData from './classes/SprintData.js'
 
 const drawerWidth = 240;
 
@@ -75,6 +77,7 @@ function Copyright(props) {
 
 const Tasks = LocalStorage.exists(LocalStorage.TASKS) ? TaskData.fromData(LocalStorage.get(LocalStorage.TASKS)) : []
 const TeamMembers = LocalStorage.exists(LocalStorage.USERS) ? UserData.fromData(LocalStorage.get(LocalStorage.USERS)) : []
+const Sprints = LocalStorage.exists(LocalStorage.SPRINTS) ? SprintData.fromData(LocalStorage.get(LocalStorage.SPRINTS)) : []
 
 let userID = LocalStorage.exists(LocalStorage.USER_ID) ? LocalStorage.get(LocalStorage.USER_ID) : 0
 
@@ -82,6 +85,11 @@ function addTeamMember(name, email) {
   TeamMembers.push(new UserData(++userID, name, email))
   LocalStorage.set(LocalStorage.USER_ID, userID)
   LocalStorage.set(LocalStorage.USERS, TeamMembers)
+}
+
+function addSprint(name, start_date, end_date) {
+  Sprints.push(new SprintData(name, start_date, end_date, "Not Started"))
+  LocalStorage.set(LocalStorage.SPRINTS, Sprints)
 }
 
 
@@ -94,6 +102,21 @@ class DashboardContent extends React.Component {
       displayTask: "",
       editingTask: false,
       creatingTeam: false,
+      creatingSprint: false,
+      taskToMove: "",
+      moveTask: false,
+    }
+  }
+
+  createSprint = () => {
+    this.setState({creatingSprint: true})
+  }
+
+  handleSprintAdd = (name, start_date, end_date) => 
+  {
+    this.setState({creatingSprint: false})
+    if (name != "" && start_date !== null && end_date !== null) {
+      addSprint(name, start_date, end_date)
     }
   }
 
@@ -104,18 +127,73 @@ class DashboardContent extends React.Component {
     }
   }
 
+  handleSprintStatusChange = (sprint) => (newState) => {
+    // Find the index to change
+    for (let i = 0; i < Sprints.length; i++) {
+      if (Sprints[i].sprintName == sprint.sprintName) {
+        Sprints[i].status = newState
+        break
+      }
+    }
+    LocalStorage.set(LocalStorage.SPRINTS, Sprints);
+    this.forceUpdate()
+  }
+
+  canSprintBeEnabled = () => {
+    return !Sprints.every(item => item.status !== "In Progress")
+  }
+
+  getSprintTasks() {
+    let output = []
+    for (let i = 0; i < Sprints.length; i++) {
+      output = output.concat(Sprints[i].tasks)
+    }
+    return output
+  }
+
   displayPage() {
     if (this.state.page == "product-backlog") {
       return (
-        <ProductItemsDataGrid data={Tasks} editing={this.state.editingTask} displayItem={this.state.displayTask} saveInfo={this.saveInfo} handleItemClick={this.handleItemClick}/>
+        <React.Fragment>
+          <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
+          <MoveItem open={this.state.moveTask} handleSelectedMoveLocation={this.handleSelectedMoveLocation} sprints={Sprints}/>
+          <ProductItemsDataGrid data={Tasks} 
+            editing={this.state.editingTask}
+            displayItem={this.state.displayTask} 
+            saveInfo={this.saveInfo} 
+            handleItemClick={this.handleItemClick} 
+            handleMoveItem={this.handleMoveItem}
+            sprintTasks={this.getSprintTasks()}/>
+        </React.Fragment>
       )
     }
-    return (
-      <React.Fragment>
-        <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
-        <TeamInfo teamMembers={TeamMembers}/>
-      </React.Fragment>
-    )
+    else if (this.state.page == "team") {
+      return (
+        <React.Fragment>
+          <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
+          <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
+          <TeamInfo teamMembers={TeamMembers}/>
+        </React.Fragment>
+      )
+    }
+    else {
+      // Should be a sprint, so try to get the info for the sprint
+      let sprintData = Sprints.find(item => item.sprintName == this.state.page) // returns undefined if nothing
+      if (!sprintData) {
+        return (
+          <Typography>
+            Shouldn't be here!
+          </Typography>
+      )}
+
+      return (
+        <React.Fragment>
+          <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
+          <DisplaySprint sprintData={sprintData} enableLock={this.canSprintBeEnabled(sprintData)} handleSprintStatusChange={this.handleSprintStatusChange(sprintData)}/>
+        </React.Fragment>
+      )
+    }
+    
   }
 
   toggleDrawer = () => {
@@ -123,7 +201,13 @@ class DashboardContent extends React.Component {
   };
 
   setPageName = (page) => {
-    this.setState({page})
+    // Check if we are trying to create a new sprint or just change page
+    if (page == "new-sprint") {
+      this.createSprint()
+    }
+    else {
+      this.setState({page})
+    }
   };
 
   createNewTask = () => {
@@ -162,6 +246,21 @@ class DashboardContent extends React.Component {
   handleItemClick = (rowID, editing=false) => {
     this.setState({displayTask: rowID, editingTask: editing})
   };
+
+  handleMoveItem = (rowID) => {
+    this.setState({moveTask: true, taskToMove: rowID})
+  }
+
+  handleSelectedMoveLocation = (moveSprint) => {
+    this.setState({moveTask: false})
+    for (let i = 0; i < Sprints.length; i++) {
+      if (Sprints[i].sprintName == moveSprint) {
+        Sprints[i].addTask(this.state.taskToMove)
+        break
+      }
+    }
+    LocalStorage.set(LocalStorage.SPRINTS, Sprints);
+  }
   
   // Returns control to the Dashboard
   returnControl = () =>  {
@@ -238,7 +337,7 @@ class DashboardContent extends React.Component {
             </Toolbar>
             <Divider />
             <List component="nav">
-              <ListItems handleClick={this.setPageName} />
+              <ListItems handleClick={this.setPageName} data={Sprints}/>
             </List>
           </Drawer>
           <Box

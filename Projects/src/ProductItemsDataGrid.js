@@ -14,13 +14,14 @@ import {
     GridToolbarFilterButton
 } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
+import DriveFileMove from '@mui/icons-material/DriveFileMove';
 import Task from './Task.js'
 import TaskData from "./classes/TaskData.js"
 
 
 // Button credit to https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
 
-const columnsFunc = (renderEditButton) => [
+const columnsFunc = (renderEditButton) => (renderMoveButton) => [
     {
         field: 'name',
         headerName: 'Story Name',
@@ -59,6 +60,14 @@ const columnsFunc = (renderEditButton) => [
         renderCell: renderEditButton,
         sortable: false,
         filterable: false,
+    },
+    {
+        field: "moveTask",
+        headerName: "",
+        width: 100,
+        renderCell: renderMoveButton,
+        sortable: false,
+        filterable: false,
     }
 ];
 
@@ -77,7 +86,7 @@ function createData(data) {
 class ProductItemsDataGrid extends React.Component {
     constructor(props) {
         super(props)
-        this.columns = columnsFunc(this.renderEditButton)
+        this.columns = columnsFunc(this.renderEditButton)(this.renderMoveButton)
     }
 
 
@@ -96,9 +105,27 @@ class ProductItemsDataGrid extends React.Component {
             </strong>
         )
     }
+
+    renderMoveButton = (rowID) => {
+      return (
+        <strong>
+            <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick = {(event) => {
+                    event.stopPropagation()
+                    this.props.handleMoveItem(rowID.id)
+                }}
+            ><DriveFileMove /></Button>
+        </strong>
+    )
+    }
     
     getRows = (data) => { 
-        return data.map(row => createData(row))
+        // Only display elements that aren't already in a sprint
+        const filteredData = data.filter(task => !this.props.sprintTasks.includes(task.id))
+        return filteredData.map(row => createData(row))
     }
 
     // Generate the data grid with the provided information

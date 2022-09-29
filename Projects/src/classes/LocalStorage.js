@@ -3,6 +3,7 @@ class LocalStorage {
     static TASKS = 'tasks';
     static USER_ID = 'user_id';
     static TASK_ID = 'task_id';
+    static SPRINTS = "sprints";
     
     static exists(key) {
         return localStorage.getItem(key) != null;
