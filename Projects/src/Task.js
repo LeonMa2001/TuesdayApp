@@ -21,7 +21,6 @@ const Fields = [
     ["Status", "status", "N/A", () => false, ""],
     ["Type", "taskType", "N/A", () => false, ""],
     ["Description", "desc", "N/A", () => false, ""],
-    ["Time Log", "timeLog", "Not setup", () => false, ""]
 ]
 
 const SelectFields = {
