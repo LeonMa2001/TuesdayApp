@@ -195,6 +195,25 @@ class DashboardContent extends React.Component {
     }
     
   }
+    else {
+      // Should be a sprint, so try to get the info for the sprint
+      let sprintData = Sprints.find(item => item.sprintName == this.state.page) // returns undefined if nothing
+      if (!sprintData) {
+        return (
+          <Typography>
+            Shouldn't be here!
+          </Typography>
+      )}
+
+      return (
+        <React.Fragment>
+          <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
+          <DisplaySprint sprintData={sprintData} enableLock={this.canSprintBeEnabled(sprintData)} handleSprintStatusChange={this.handleSprintStatusChange(sprintData)}/>
+        </React.Fragment>
+      )
+    }
+    
+  }
 
   toggleDrawer = () => {
     this.setState({open: !this.state.open})
