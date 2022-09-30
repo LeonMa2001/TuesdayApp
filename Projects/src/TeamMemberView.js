@@ -18,6 +18,11 @@ ChartJS.register( // registers the chart
 );
 
 export default class TeamMemberView extends React.Component {
+    /*
+      Construct the component
+
+      @param props   React props passed down from parent
+    */
     constructor(props) {
       super(props)
       this.data = [];
@@ -30,6 +35,9 @@ export default class TeamMemberView extends React.Component {
     
     }
 
+    /*
+      Generate the data set for the chart for the popup
+    */
     __generateDataSet() { // generates the data/date set to be displayed on the graph
         const dates = [];
         const data = [];
@@ -47,6 +55,9 @@ export default class TeamMemberView extends React.Component {
         this.dates = dates;
     }
   
+    /*
+      Render the modal
+    */
     render() {
         this.__generateDataSet();
         return (

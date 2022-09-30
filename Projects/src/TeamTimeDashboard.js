@@ -20,14 +20,20 @@ ChartJS.register( // registers the chart
 );
 
 export default class TeamTimeDashboard extends Component {
-    // Contruct the dashboard
+    /*
+      Construct the component
+
+      @param props   React props passed down from parent
+    */
     constructor(props) {
         super(props);
         this.dates = [];
         this.data = [];
     }
 
-    // Generate the data set to display on the graph
+    /*
+      Generate the data set for the chart
+    */
     __generateDataSet() {
         const dates = [];
         const data = [];
@@ -47,7 +53,9 @@ export default class TeamTimeDashboard extends Component {
         this.dates = dates;
     }
 
-    // render the dashboard
+    /*
+      Render the dashboard
+    */
     render() {
         this.__generateDataSet(); // generate the data
         return (

@@ -1,9 +1,18 @@
+// TeamInfo.js
+// Last modified: 30/09/22
+// Modifier: Samir Gupta
+
 import React from 'react';
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-// https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript 
+/* 
+  Validates an email using regular expresssions
+  Source: https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript 
+
+  @param email  The email to validate
+*/
 const validateEmail = (email) => { // Validate the email
   return String(email)
     .toLowerCase()
@@ -15,6 +24,11 @@ const validateEmail = (email) => { // Validate the email
 // Exporting the adding team member popup
 
 export class TeamMemberModal extends React.Component {
+  /*
+    Construct the component
+
+    @param props   React props passed down from parent
+  */
   constructor(props) {
     super(props)
     this.state = {
@@ -33,7 +47,9 @@ export class TeamMemberModal extends React.Component {
   
   }
 
-
+  /*
+    Toggles the state of the popup and resets the name and email
+  */
   toggleState = () => {
     this.setState({ // reset state when state is toggled
       open: !this.state.open, 
@@ -44,7 +60,11 @@ export class TeamMemberModal extends React.Component {
     });
   }
 
-  // Handles when name field is changed
+  /*
+    Handles the changing of the name field
+
+    @param e   The event that triggered this function
+  */
   nameChanged = (e) => {
     this.setState({name: e.target.value});
     let error = false;
@@ -64,6 +84,11 @@ export class TeamMemberModal extends React.Component {
     this.setState({nameError: [error, description]}) // Update error state
   }
 
+  /*
+    Handles the changing of the email field
+
+    @param e   The event that triggered this function
+  */
   emailChanged = (e) => {
     this.setState({email: e.target.value});
     let error = false;
@@ -83,6 +108,9 @@ export class TeamMemberModal extends React.Component {
     this.setState({emailError: [error, description]}); // Update error state
   }
 
+  /*
+    Render the modal popup
+  */
   render() {
     return (
       <div>
@@ -158,6 +186,11 @@ export class TeamMemberModal extends React.Component {
 
 // Exporting the main datagrid
 export default class TeamInfo extends React.Component {
+  /*
+    Construct the component
+
+    @param props   The props passed down from parent
+  */
   constructor(props) {
     super(props)
     this.columns = [ // columns to show in the data grid
@@ -175,6 +208,9 @@ export default class TeamInfo extends React.Component {
     ];
   }
 
+  /*
+    Render the datagrid
+  */
   render() {
     return (
       <Box sx={{ height: 400, width: '100%' }}>
