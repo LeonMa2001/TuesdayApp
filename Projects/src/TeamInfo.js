@@ -1,16 +1,18 @@
+// TeamInfo.js
+// Last modified: 30/09/22
+// Modifier: Samir Gupta
+
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
+/* 
+  Validates an email using regular expresssions
+  Source: https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript 
 
-
-
-const columns = [ // columns to show in the data grid
-  { field: 'name', headerName: 'Name', width: 300, editable: false},
-  { field: 'email', headerName: 'Email', width: 300, editable: false}
-];
-
-// https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript 
+  @param email  The email to validate
+*/
 const validateEmail = (email) => { // Validate the email
   return String(email)
     .toLowerCase()
@@ -22,6 +24,11 @@ const validateEmail = (email) => { // Validate the email
 // Exporting the adding team member popup
 
 export class TeamMemberModal extends React.Component {
+  /*
+    Construct the component
+
+    @param props   React props passed down from parent
+  */
   constructor(props) {
     super(props)
     this.state = {
@@ -40,10 +47,24 @@ export class TeamMemberModal extends React.Component {
   
   }
 
+  /*
+    Toggles the state of the popup and resets the name and email
+  */
+  toggleState = () => {
+    this.setState({ // reset state when state is toggled
+      open: !this.state.open, 
+      name: "",
+      email: "",
+      nameError: [],
+      emailError: [],
+    });
+  }
 
-  toggleState = () => {this.setState({open: !this.state.open})};
+  /*
+    Handles the changing of the name field
 
-  // Handles when name field is changed
+    @param e   The event that triggered this function
+  */
   nameChanged = (e) => {
     this.setState({name: e.target.value});
     let error = false;
@@ -63,6 +84,11 @@ export class TeamMemberModal extends React.Component {
     this.setState({nameError: [error, description]}) // Update error state
   }
 
+  /*
+    Handles the changing of the email field
+
+    @param e   The event that triggered this function
+  */
   emailChanged = (e) => {
     this.setState({email: e.target.value});
     let error = false;
@@ -82,6 +108,9 @@ export class TeamMemberModal extends React.Component {
     this.setState({emailError: [error, description]}); // Update error state
   }
 
+  /*
+    Render the modal popup
+  */
   render() {
     return (
       <div>
@@ -129,7 +158,10 @@ export class TeamMemberModal extends React.Component {
                 <Button 
                 color='primary' 
                 variant="contained" 
-                onClick={() => this.props.handleTeamMemberAdd(this.state.name, this.state.email)}
+                onClick={() => {
+                  this.props.handleTeamMemberAdd(this.state.name, this.state.email);
+                  this.toggleState();
+                }}
                 disabled={this.state.nameError[0] || this.state.emailError[0]} // add button is disabled if input in invalid
                 >
                 Add
@@ -154,22 +186,44 @@ export class TeamMemberModal extends React.Component {
 
 // Exporting the main datagrid
 export default class TeamInfo extends React.Component {
+  /*
+    Construct the component
+
+    @param props   The props passed down from parent
+  */
   constructor(props) {
     super(props)
+    this.columns = [ // columns to show in the data grid
+      { field: 'name', headerName: 'Name', width: 300, editable: false},
+      { field: 'email', headerName: 'Email', width: 500, editable: false},
+      { field: 'hours', headerName: 'Total Hours', width: 100, editable: false, type: 'number', align: 'center'},
+      { field: 'delete', type: 'actions', getActions: (params) => [ // have an action column to delete
+          <GridActionsCellItem 
+            icon={<DeleteIcon/>} // icon to show
+            onClick={() => this.props.handleTeamMemberDelete(params.id)} // delete team member when this icon is clicked
+            label="Delete" 
+          />
+        ]
+      }
+    ];
   }
 
+  /*
+    Render the datagrid
+  */
   render() {
     return (
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           rows={this.props.teamMembers.map((member) => { return member.createData() })}
-          columns={columns}
+          columns={this.columns}
           pageSize={5}
           autoHeight
           rowsPerPageOptions={[5]}
           checkboxSelection
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
+          onRowClick={(rowData) => this.props.toggleView(rowData.id)}
         />
       </Box>
     )

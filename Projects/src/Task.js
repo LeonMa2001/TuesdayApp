@@ -25,9 +25,9 @@ const Fields = [
 
 const SelectFields = {
     priority: ["Low", "Medium", "High", "Critical"],
-    tag: ["Database", "User Interface", "Testing"],
+    tag: ["Core", "User Interface", "Testing"],
     status: ["Not Started", "In Progress", "Completed"],
-    assignees: ["Not Implemented"], // TODO next sprint!
+    assignees: [],
     taskType: ["User Story", "Bug"]
 }
 
@@ -35,13 +35,17 @@ const SelectFields = {
 class Task extends React.Component {
     constructor(props) {
         super(props)
-        console.log(this.props.data)
         this.state = {
             editing: props.editing ?? false, // nullish coalescing operator (left if not null/undefined, otherwise right)
             data: this.props.data
         } 
 
         this.handleInputChange.bind(this)
+        
+        SelectFields.assignees = [];
+        this.props.teamMembers.forEach(member => {
+            SelectFields.assignees.push(member.name);
+        });
     }
 
 
