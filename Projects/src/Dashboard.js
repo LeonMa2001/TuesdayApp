@@ -1,3 +1,8 @@
+/*
+  Main dashboard functionality file.
+  Controls data flow in and out of individual components of the program.
+*/
+
 import * as React from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -16,6 +21,11 @@ import UserData from './classes/UserData.js';
 import NewSprintModal, { DisplaySprint, MoveItem } from "./Sprint.js"
 import SprintData from './classes/SprintData.js'
 
+
+/*
+  Styling components.
+  Credit to MUI.
+*/
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
@@ -61,7 +71,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     },
   }),
 );
-
 const mdTheme = createTheme();
 
 function Copyright(props) {
@@ -74,25 +83,51 @@ function Copyright(props) {
   );
 }
 
-
+/*
+  Get data out of Local Storage.
+*/
+// All Tasks
 const Tasks = LocalStorage.exists(LocalStorage.TASKS) ? TaskData.fromData(LocalStorage.get(LocalStorage.TASKS)) : []
+// All Team Members
 const TeamMembers = LocalStorage.exists(LocalStorage.USERS) ? UserData.fromData(LocalStorage.get(LocalStorage.USERS)) : []
+// All Sprints. Tasks are mapped in the .tasks property as a list of task IDs
 const Sprints = LocalStorage.exists(LocalStorage.SPRINTS) ? SprintData.fromData(LocalStorage.get(LocalStorage.SPRINTS)) : []
-
+// Current ID for user, used to have unique IDs for users
 let userID = LocalStorage.exists(LocalStorage.USER_ID) ? LocalStorage.get(LocalStorage.USER_ID) : 0
 
+/*
+  Utility functions to manipulate data storage
+*/
+
+/*
+  Adds a new team member to local storage. Assumes name and email are valid and checked.
+
+  @param name  The name of the new team member to add.
+  @param email The email of the new team member to add.
+*/
 function addTeamMember(name, email) {
   TeamMembers.push(new UserData(++userID, name, email))
   LocalStorage.set(LocalStorage.USER_ID, userID)
   LocalStorage.set(LocalStorage.USERS, TeamMembers)
 }
 
+/* 
+  Adds a new sprint to local storage. Assumes name, start_date and end_date are valid and checked.
+  
+  @param name       The name of the new sprint to add
+  @param start_date The start date of the sprint as a dayjs instance
+  @param end_date   The end date of the sprint as a dayjs instance
+*/
 function addSprint(name, start_date, end_date) {
   Sprints.push(new SprintData(name, start_date, end_date, "Not Started"))
   LocalStorage.set(LocalStorage.SPRINTS, Sprints)
 }
 
-
+/*
+  Overall Dashboard class.
+  Controls the data flow between different components as well as managing popup modals, 
+  sprint/team member creation, and task viewing/editing.
+*/
 class DashboardContent extends React.Component {
   constructor() {
     super()
@@ -108,6 +143,9 @@ class DashboardContent extends React.Component {
     }
   }
 
+  /*
+    Sprint creation functions
+  */
   createSprint = () => {
     this.setState({creatingSprint: true})
   }
@@ -117,13 +155,6 @@ class DashboardContent extends React.Component {
     this.setState({creatingSprint: false})
     if (name != "" && start_date !== null && end_date !== null) {
       addSprint(name, start_date, end_date)
-    }
-  }
-
-  handleTeamMemberAdd = (name, email) => {
-    this.setState({creatingTeam: false})
-    if (name != "" && email != "" ) {
-      addTeamMember(name, email);
     }
   }
 
@@ -151,6 +182,43 @@ class DashboardContent extends React.Component {
     return output
   }
 
+  /*
+    Team member creation functions
+  */
+  handleTeamMemberAdd = (name, email) => {
+    this.setState({creatingTeam: false})
+    if (name != "" && email != "" ) {
+      addTeamMember(name, email);
+    }
+  }
+
+  /*
+    Task creation / editing functionality
+  */
+  createNewTask = () => {
+    let taskID = LocalStorage.exists(LocalStorage.TASK_ID) ? LocalStorage.get(LocalStorage.TASK_ID) : 0;
+    LocalStorage.set(LocalStorage.TASK_ID, ++taskID);
+
+    this.setState({displayTask: taskID, editingTask: true});
+  }
+
+  getTaskIndex = (taskID) => {
+    for (let i in Tasks) {
+      if (Tasks[i].id == taskID) {
+        return i
+      }
+    }
+    return -1
+  }
+
+  editTask = (rowID) => {
+    this.setState({displayTask: rowID, editingTask: true})
+  }
+
+
+  /*
+    Dashboard display functionality
+  */
   displayPage() {
     if (this.state.page == "product-backlog") {
       return (
@@ -160,7 +228,7 @@ class DashboardContent extends React.Component {
           <ProductItemsDataGrid data={Tasks} 
             editing={this.state.editingTask}
             displayItem={this.state.displayTask} 
-            saveInfo={this.saveInfo} 
+            saveInfo={this.saveTaskInfo} 
             handleItemClick={this.handleItemClick} 
             handleMoveItem={this.handleMoveItem}
             sprintTasks={this.getSprintTasks()}/>
@@ -210,23 +278,7 @@ class DashboardContent extends React.Component {
     }
   };
 
-  createNewTask = () => {
-    let taskID = LocalStorage.exists(LocalStorage.TASK_ID) ? LocalStorage.get(LocalStorage.TASK_ID) : 0;
-    LocalStorage.set(LocalStorage.TASK_ID, ++taskID);
-
-    this.setState({displayTask: taskID, editingTask: true});
-  }
-
-  getTaskIndex = (taskID) => {
-    for (let i in Tasks) {
-      if (Tasks[i].id == taskID) {
-        return i
-      }
-    }
-    return -1
-  }
-
-  saveInfo = (info) => {
+  saveTaskInfo = (info) => {
     let taskIndex = this.getTaskIndex(this.state.displayTask);
     if (taskIndex == -1) {
       Tasks.push(info)
@@ -235,10 +287,6 @@ class DashboardContent extends React.Component {
       Tasks[taskIndex] = info;
     }
     LocalStorage.set(LocalStorage.TASKS, Tasks);
-  }
-
-  editTask = (rowID) => {
-    this.setState({displayTask: rowID, editingTask: true})
   }
 
   // Create a pop-up when a row is clicked
