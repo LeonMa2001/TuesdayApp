@@ -4,6 +4,7 @@
 
 import * as React from 'react'
 import Box from '@mui/material/Box'
+import clsx from 'clsx';
 import Button from '@mui/material/Button';
 import LinearProgress from '@mui/material/LinearProgress';
 import { styled } from '@mui/material/styles';
@@ -34,6 +35,17 @@ const columnsFunc = (renderEditButton) => (renderMoveButton) => [
         field: 'tag',
         headerName: 'Tag',
         width: 300,
+        cellClassName: (params) => {
+          if (params.value == null) {
+            return '';
+          }
+
+          return clsx('task-tag', {
+            core: params.value == 'Core',
+            interface: params.value == 'User Interface', 
+            testing: params.value == 'Testing',
+          });
+        },
         editable: false,
         sortable: false,
     },
@@ -41,6 +53,18 @@ const columnsFunc = (renderEditButton) => (renderMoveButton) => [
         field: 'priority',
         headerName: 'Priority',
         width: 100,
+        cellClassName: (params) => {
+          if (params.value == null) {
+            return '';
+          }
+
+          return clsx('task-priority', {
+            low: params.value == 'Low',
+            medium: params.value == 'Medium', 
+            high: params.value == 'High',
+            critical: params.value == 'Critical'
+          });
+        },
         editable: false,
         sortable: false,
         filterable: false,
@@ -131,7 +155,38 @@ class ProductItemsDataGrid extends React.Component {
     // Generate the data grid with the provided information
     generateDataGrid() {
         return (
-            <Box sx={{ height: 400, width: '100%' }}>
+            <Box sx={{ 
+              height: 400, 
+              width: '100%',
+              '& .task-tag.core': {
+                backgroundColor: '#d47483',
+                fontWeight: '500',
+              },
+              '& .task-tag.interface': {
+                backgroundColor: '#E2D1F9',
+                fontWeight: '500',
+              },
+              '& .task-tag.testing': {
+                backgroundColor: '#CCF381',
+                fontWeight: '500',
+              },
+              '& .task-priority.low': {
+                backgroundColor: '#A6A6A6',
+                fontWeight: '500',
+              },
+              '& .task-priority.medium': {
+                backgroundColor: '#FFF529',
+                fontWeight: '500',
+              },
+              '& .task-priority.high': {
+                backgroundColor: '#F18A00',
+                fontWeight: '500',
+              },
+              '& .task-priority.critical': {
+                backgroundColor: '#D00000',
+                fontWeight: '500',
+              },
+              }}>
               <DataGrid
                 components={{
                     Toolbar: CustomToolbar,

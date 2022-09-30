@@ -26,7 +26,7 @@ const Fields = [
 
 const SelectFields = {
     priority: ["Low", "Medium", "High", "Critical"],
-    tag: ["Database", "User Interface", "Testing"],
+    tag: ["Core", "User Interface", "Testing"],
     status: ["Not Started", "In Progress", "Completed"],
     assignees: [],
     taskType: ["User Story", "Bug"]
