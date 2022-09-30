@@ -20,6 +20,9 @@ import TaskData from './classes/TaskData.js';
 import UserData from './classes/UserData.js';
 import NewSprintModal, { DisplaySprint, MoveItem } from "./Sprint.js"
 import SprintData from './classes/SprintData.js'
+import TeamTimeDashboard from './TeamTimeDashboard';
+import dayjs from 'dayjs';
+import TeamMemberView from './TeamMemberView';
 
 
 /*
@@ -89,10 +92,12 @@ function Copyright(props) {
 // All Tasks
 const Tasks = LocalStorage.exists(LocalStorage.TASKS) ? TaskData.fromData(LocalStorage.get(LocalStorage.TASKS)) : []
 // All Team Members
-const TeamMembers = LocalStorage.exists(LocalStorage.USERS) ? UserData.fromData(LocalStorage.get(LocalStorage.USERS)) : []
+let TeamMembers = LocalStorage.exists(LocalStorage.USERS) ? UserData.fromData(LocalStorage.get(LocalStorage.USERS)) : []
+
 // All Sprints. Tasks are mapped in the .tasks property as a list of task IDs
 const Sprints = LocalStorage.exists(LocalStorage.SPRINTS) ? SprintData.fromData(LocalStorage.get(LocalStorage.SPRINTS)) : []
 // Current ID for user, used to have unique IDs for users
+
 let userID = LocalStorage.exists(LocalStorage.USER_ID) ? LocalStorage.get(LocalStorage.USER_ID) : 0
 
 /*
@@ -122,6 +127,16 @@ function addSprint(name, start_date, end_date) {
   Sprints.push(new SprintData(name, start_date, end_date, "Not Started"))
   LocalStorage.set(LocalStorage.SPRINTS, Sprints)
 }
+// Function to delete a team member from the list
+// Params
+// - id: The id of the team member to delete
+function deleteTeamMember(id) { // delete a team member
+  TeamMembers = TeamMembers.filter((member) => { // filter team members based on their id
+    return member.id != id; 
+  });
+  LocalStorage.set(LocalStorage.USERS, TeamMembers); // update local storage
+}
+
 
 /*
   Overall Dashboard class.
@@ -140,6 +155,10 @@ class DashboardContent extends React.Component {
       creatingSprint: false,
       taskToMove: "",
       moveTask: false,
+      viewingTeamMember: false,
+      graphStartDate: dayjs().subtract(5, 'day'),
+      graphEndDate: dayjs(), // initialise the dates
+      viewMember: undefined
     }
   }
 
@@ -195,6 +214,34 @@ class DashboardContent extends React.Component {
   /*
     Task creation / editing functionality
   */
+  handleTeamMemberDelete = (id) => { // deletes a team member
+    if (confirm('Are you sure you want to delete this team member?')) {
+      deleteTeamMember(id);
+      this.setState({creatingTeam: false}); // set a state so that the list of team members re-renders
+    }
+  }
+
+  setStart = (value) => { // set the starting date of the team graphs
+    this.setState({graphStartDate: value});
+  }
+  setEnd = (value) => { // set the end date of the team graphs
+    this.setState({graphEndDate: value});
+  }
+  toggleViewTeamMember = (id=null) => {
+    if (id !== null) {
+      this.setState({viewMember: TeamMembers.find((member) => member.id === id)});
+    }
+    this.setState({viewingTeamMember: !this.state.viewingTeamMember});
+  }
+
+  toggleDrawer = () => {
+    this.setState({open: !this.state.open})
+  };
+
+  setPageName = (page) => {
+    this.setState({page})
+  };
+
   createNewTask = () => {
     let taskID = LocalStorage.exists(LocalStorage.TASK_ID) ? LocalStorage.get(LocalStorage.TASK_ID) : 0;
     LocalStorage.set(LocalStorage.TASK_ID, ++taskID);
@@ -226,6 +273,7 @@ class DashboardContent extends React.Component {
           <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
           <MoveItem open={this.state.moveTask} handleSelectedMoveLocation={this.handleSelectedMoveLocation} sprints={Sprints}/>
           <ProductItemsDataGrid data={Tasks} 
+            teamMembers={TeamMembers}
             editing={this.state.editingTask}
             displayItem={this.state.displayTask} 
             saveInfo={this.saveTaskInfo} 
@@ -238,10 +286,29 @@ class DashboardContent extends React.Component {
     else if (this.state.page == "team") {
       return (
         <React.Fragment>
-          <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
+        <Grid container spacing={3} alignItems="center">
+          <Grid item xs={12} style={{textAlign: "center"}}>
+            <Typography id="modal-modal-title" variant="h6" component="h3">
+              Team Timelog Graph
+            </Typography>
+          </Grid>
+          <Grid item xs={2}></Grid>
+          <Grid item xs={8} style={{textAlign: "center"}}>
+            <TeamTimeDashboard teamMembers={TeamMembers} start={this.state.graphStartDate} end={this.state.graphEndDate} setStart={this.setStart} setEnd={this.setEnd}/>
+          </Grid>
+          <Grid item xs={2}></Grid>
           <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
-          <TeamInfo teamMembers={TeamMembers}/>
-        </React.Fragment>
+          <TeamMemberView open={this.state.viewingTeamMember} start={this.state.graphStartDate} end={this.state.graphEndDate} toggle={this.toggleViewTeamMember} user={this.state.viewMember}/>
+          <Grid item xs={12} style={{textAlign: "center"}}>
+            <Typography id="modal-modal-title" variant="h6" component="h3">
+              Team Members
+            </Typography>
+          </Grid>
+          <Grid item xs={12} style={{textAlign: "center"}}>
+            <TeamInfo teamMembers={TeamMembers} handleTeamMemberDelete={this.handleTeamMemberDelete} toggleView={this.toggleViewTeamMember}/>
+          </Grid>
+        </Grid>
+      </React.Fragment>
       )
     }
     else {

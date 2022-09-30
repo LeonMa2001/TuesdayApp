@@ -1,14 +1,7 @@
 import React from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
-
-
-
-
-const columns = [ // columns to show in the data grid
-  { field: 'name', headerName: 'Name', width: 300, editable: false},
-  { field: 'email', headerName: 'Email', width: 300, editable: false}
-];
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript 
 const validateEmail = (email) => { // Validate the email
@@ -41,7 +34,15 @@ export class TeamMemberModal extends React.Component {
   }
 
 
-  toggleState = () => {this.setState({open: !this.state.open})};
+  toggleState = () => {
+    this.setState({ // reset state when state is toggled
+      open: !this.state.open, 
+      name: "",
+      email: "",
+      nameError: [],
+      emailError: [],
+    });
+  }
 
   // Handles when name field is changed
   nameChanged = (e) => {
@@ -129,7 +130,10 @@ export class TeamMemberModal extends React.Component {
                 <Button 
                 color='primary' 
                 variant="contained" 
-                onClick={() => this.props.handleTeamMemberAdd(this.state.name, this.state.email)}
+                onClick={() => {
+                  this.props.handleTeamMemberAdd(this.state.name, this.state.email);
+                  this.toggleState();
+                }}
                 disabled={this.state.nameError[0] || this.state.emailError[0]} // add button is disabled if input in invalid
                 >
                 Add
@@ -156,6 +160,19 @@ export class TeamMemberModal extends React.Component {
 export default class TeamInfo extends React.Component {
   constructor(props) {
     super(props)
+    this.columns = [ // columns to show in the data grid
+      { field: 'name', headerName: 'Name', width: 300, editable: false},
+      { field: 'email', headerName: 'Email', width: 500, editable: false},
+      { field: 'hours', headerName: 'Total Hours', width: 100, editable: false, type: 'number', align: 'center'},
+      { field: 'delete', type: 'actions', getActions: (params) => [ // have an action column to delete
+          <GridActionsCellItem 
+            icon={<DeleteIcon/>} // icon to show
+            onClick={() => this.props.handleTeamMemberDelete(params.id)} // delete team member when this icon is clicked
+            label="Delete" 
+          />
+        ]
+      }
+    ];
   }
 
   render() {
@@ -163,13 +180,14 @@ export default class TeamInfo extends React.Component {
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
           rows={this.props.teamMembers.map((member) => { return member.createData() })}
-          columns={columns}
+          columns={this.columns}
           pageSize={5}
           autoHeight
           rowsPerPageOptions={[5]}
           checkboxSelection
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
+          onRowClick={(rowData) => this.props.toggleView(rowData.id)}
         />
       </Box>
     )
