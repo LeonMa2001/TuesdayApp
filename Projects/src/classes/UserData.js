@@ -18,7 +18,11 @@ class UserData {
 
     createData() { return {id: this._id, name: this._name, email: this._email, hours: this.getTotalTime()}; }
     
-    // get the total time worked on tasks on a specific date
+    /* 
+        Get the total time worked on tasks on a specific date
+
+        @param date   The date to find the total tine for
+    */
     getTotalTimeDate(date) {
         let total = 0;
         for (let i = 0; i < this._timeLog.length; i++) {
@@ -31,7 +35,9 @@ class UserData {
         return total;
     }
 
-    // get the total time worked by this user
+    /* 
+        Get the total time worked by this user
+    */
     getTotalTime() {
         let total = 0;
         this._timeLog.forEach(log => total += log.time);
