@@ -31,7 +31,6 @@ class UserData {
                 total += log.time;
             }
         }
-        //return 2 // uncomment for dummy values
         return total;
     }
 
@@ -41,7 +40,6 @@ class UserData {
     getTotalTime() {
         let total = 0;
         this._timeLog.forEach(log => total += log.time);
-        //return 10 // uncomment for dummy values
         return total;
     }
 }

@@ -21,7 +21,6 @@ import TaskData from "./classes/TaskData.js"
 
 
 // Button credit to https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
-
 const columnsFunc = (renderEditButton) => (renderMoveButton) => [
     {
         field: 'name',
@@ -114,6 +113,12 @@ class ProductItemsDataGrid extends React.Component {
     }
 
 
+    /*
+      Creates a Button object with the specified rowID being handled when clicked.
+      Requires a handleItemClick prop.
+
+      @param rowID    The rowID this button corresponds to
+    */
     renderEditButton = (rowID) => {
         return (
             <strong>
@@ -130,6 +135,12 @@ class ProductItemsDataGrid extends React.Component {
         )
     }
 
+    /*
+      Creates a Button object with the specified rowID being handled when clicked.
+      Requires a handleMoveItem prop.
+
+      @param rowID    The rowID this button corresponds to
+    */
     renderMoveButton = (rowID) => {
       return (
         <strong>
@@ -146,15 +157,23 @@ class ProductItemsDataGrid extends React.Component {
     )
     }
     
+    /*
+      Filters out tasks that are part of a sprint.
+      Requires a sprintTasks prop which is a list of task IDs that are already in a sprint.
+      
+      @param data   A list of tasks to filter on
+    */
     getRows = (data) => { 
-        // Only display elements that aren't already in a sprint
         const filteredData = data.filter(task => !this.props.sprintTasks.includes(task.id))
         return filteredData.map(row => createData(row))
     }
 
-    // Generate the data grid with the provided information
+    /*
+      Generates the data grid with the provided data.
+    */
     generateDataGrid() {
         return (
+          // Fancy graphics
             <Box sx={{ 
               height: 400, 
               width: '100%',
@@ -187,6 +206,7 @@ class ProductItemsDataGrid extends React.Component {
                 fontWeight: '500',
               },
               }}>
+            {/* Generate the actual grid itself */}
               <DataGrid
                 components={{
                     Toolbar: CustomToolbar,
@@ -221,11 +241,20 @@ class ProductItemsDataGrid extends React.Component {
         )
     }
 
+    /*
+      Gets the task data corresponding to the provided displayItem, else creating a new TaskData instance if 
+      it does not already exist.
+
+      Requires the data and displayItem prop to be set.
+    */
     getCorrectRow() {
       return this.props.data.filter(task => task.id == this.props.displayItem)[0] ?? new TaskData(this.props.displayItem)
     }
 
    
+    /*
+      Displays the task if specified, optionally in editing mode.
+    */
     displayComponent() {
         if (this.props.displayItem) {
             return <Task rowID={this.props.displayItem} teamMembers={this.props.teamMembers} returnControl={this.props.handleItemClick} editing={this.props.editing} data={this.getCorrectRow()} saveInfo={this.props.saveInfo}/>
@@ -234,6 +263,9 @@ class ProductItemsDataGrid extends React.Component {
 
     }
 
+    /*
+      Main render function.
+    */
     render() {
         return (
             <React.Fragment>
@@ -246,6 +278,9 @@ class ProductItemsDataGrid extends React.Component {
 
 export default ProductItemsDataGrid;
 
+/*
+  Various graphics / interface changes.
+*/
 function CustomToolbar() {
   return (
     <GridToolbarContainer>

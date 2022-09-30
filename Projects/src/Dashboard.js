@@ -75,7 +75,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 const mdTheme = createTheme();
-
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -127,16 +126,17 @@ function addSprint(name, start_date, end_date) {
   Sprints.push(new SprintData(name, start_date, end_date, "Not Started"))
   LocalStorage.set(LocalStorage.SPRINTS, Sprints)
 }
-// Function to delete a team member from the list
-// Params
-// - id: The id of the team member to delete
+/*
+  Deletes a team member from the TeamMembers list via filtering.
+
+  @param id   The id of the team member to delete.
+*/
 function deleteTeamMember(id) { // delete a team member
   TeamMembers = TeamMembers.filter((member) => { // filter team members based on their id
     return member.id != id; 
   });
   LocalStorage.set(LocalStorage.USERS, TeamMembers); // update local storage
 }
-
 
 /*
   Overall Dashboard class.
@@ -165,10 +165,21 @@ class DashboardContent extends React.Component {
   /*
     Sprint creation functions
   */
+
+  /*
+    Changes the state to cause the sprint creation modal to show.
+  */
   createSprint = () => {
     this.setState({creatingSprint: true})
   }
 
+  /*
+    Validates that the provided sprint data is valid and then saves it, hiding the modal at the same time.
+
+    @param name       The name of the sprint to add
+    @param start_date The start date of the sprint as a dayjs instance
+    @param end_date   The end date of the sprint as a dayjs instance
+  */
   handleSprintAdd = (name, start_date, end_date) => 
   {
     this.setState({creatingSprint: false})
@@ -177,6 +188,13 @@ class DashboardContent extends React.Component {
     }
   }
 
+  /*
+    Given a specific sprint and a new state of the sprint, updates the storage for the sprint 
+    and refreshes the rendering to display the change.
+
+    @param sprint   The sprint to update
+    @param newState The new status to store for the provided sprint
+  */
   handleSprintStatusChange = (sprint) => (newState) => {
     // Find the index to change
     for (let i = 0; i < Sprints.length; i++) {
@@ -189,10 +207,18 @@ class DashboardContent extends React.Component {
     this.forceUpdate()
   }
 
-  canSprintBeEnabled = () => {
+  /*
+    Determines if a sprint can be started (as only one sprint can be started at once).
+    Returns true if there is already a started sprint.
+  */
+  disableSprintEnable = () => {
     return !Sprints.every(item => item.status !== "In Progress")
   }
 
+  /*
+    Gets the tasks that are assigned to a sprint, for the purposes of hiding them from the product backlog.
+    Returns a list of task IDs which correponding to all tasks within sprints.
+  */
   getSprintTasks() {
     let output = []
     for (let i = 0; i < Sprints.length; i++) {
@@ -202,7 +228,15 @@ class DashboardContent extends React.Component {
   }
 
   /*
-    Team member creation functions
+    Team member creation/deletion/graphing functions
+  */
+
+  /*
+    Validates that the provided team member data is valid and then saves it, hiding the modal at the same time.
+
+    @param name    The name of the team member to add
+    @param email   The email of the team member to add
+
   */
   handleTeamMemberAdd = (name, email) => {
     this.setState({creatingTeam: false})
@@ -212,7 +246,9 @@ class DashboardContent extends React.Component {
   }
 
   /*
-    Task creation / editing functionality
+    Validates that the user wants to delete the specified team member, then deletes them, refreshing the modal at the same time.
+
+    @param id The id of the team member to delete
   */
   handleTeamMemberDelete = (id) => { // deletes a team member
     if (confirm('Are you sure you want to delete this team member?')) {
@@ -221,12 +257,30 @@ class DashboardContent extends React.Component {
     }
   }
 
+  /*
+    Sets the starting date for the graph in the state
+
+    @param value  The start date to set
+  */
   setStart = (value) => { // set the starting date of the team graphs
     this.setState({graphStartDate: value});
   }
+
+  /*
+    Sets the end date for the graph in the state
+
+    @param value  The end date to set
+
+  */
   setEnd = (value) => { // set the end date of the team graphs
     this.setState({graphEndDate: value});
   }
+
+  /*
+    Changes the state to render the team member stat modal, displaying a team member if id is specified otherwise hiding the modal.
+
+    @param id The id of the team member to view stats for
+  */
   toggleViewTeamMember = (id=null) => {
     if (id !== null) {
       this.setState({viewMember: TeamMembers.find((member) => member.id === id)});
@@ -234,14 +288,14 @@ class DashboardContent extends React.Component {
     this.setState({viewingTeamMember: !this.state.viewingTeamMember});
   }
 
-  toggleDrawer = () => {
-    this.setState({open: !this.state.open})
-  };
+  /*
+    Task creation / editing functionality
+  */
 
-  setPageName = (page) => {
-    this.setState({page})
-  };
-
+  /*
+    Starts the creation of a new task, incrementing the value of taskID to make sure each task has a unique id.
+    Then changes the state of the Dashboard to display the task creation screen.
+  */
   createNewTask = () => {
     let taskID = LocalStorage.exists(LocalStorage.TASK_ID) ? LocalStorage.get(LocalStorage.TASK_ID) : 0;
     LocalStorage.set(LocalStorage.TASK_ID, ++taskID);
@@ -249,6 +303,12 @@ class DashboardContent extends React.Component {
     this.setState({displayTask: taskID, editingTask: true});
   }
 
+  /*
+    Gets the index of a task in the Tasks list.
+    Each task should have a unique ID.
+
+    @param taskID   The unique ID of the task to search for
+  */
   getTaskIndex = (taskID) => {
     for (let i in Tasks) {
       if (Tasks[i].id == taskID) {
@@ -258,20 +318,92 @@ class DashboardContent extends React.Component {
     return -1
   }
 
+  /*
+    Modifies the state to start editing a specific task
+
+    @param rowID   The ID of the row which corresponds to a specific task
+  */
   editTask = (rowID) => {
     this.setState({displayTask: rowID, editingTask: true})
   }
+
+  /*
+    Saves task information in local storage.
+    If the task doesn't exist, this adds it to the local storage.
+
+    @param info The task info to add / update in local storage.
+  */
+    saveTaskInfo = (info) => {
+      let taskIndex = this.getTaskIndex(this.state.displayTask);
+      if (taskIndex == -1) {
+        Tasks.push(info)
+      }
+      else {
+        Tasks[taskIndex] = info;
+      }
+      LocalStorage.set(LocalStorage.TASKS, Tasks);
+    }
+  
+    /*
+      Create a pop-up when a row is clicked
+      Returns to the main dashboard if rowID is not defined / null.
+
+      @param rowID    The row ID corresponding to the task that was clicked on.
+      @param editing  Whether to begin editing the specified task
+    */
+    handleItemClick = (rowID, editing=false) => {
+      this.setState({displayTask: rowID, editingTask: editing})
+    };
+  
+    /*
+      Opens the move item modal when a task is selected to be moved.
+
+      @param rowID  The row ID corresponding to the task that should be moved into a sprint.
+    */
+    handleMoveItem = (rowID) => {
+      this.setState({moveTask: true, taskToMove: rowID})
+    }
+  
+    /*
+      Moves the specified task into the selected sprint and updates local storage accordingly.
+      The task to move should be stored in this.state.taskToMove
+
+      @param moveSprint   The name of the sprint to move the task to.
+    */
+    handleSelectedMoveLocation = (moveSprint) => {
+      this.setState({moveTask: false})
+      for (let i = 0; i < Sprints.length; i++) {
+        if (Sprints[i].sprintName == moveSprint) {
+          Sprints[i].addTask(this.state.taskToMove)
+          break
+        }
+      }
+      LocalStorage.set(LocalStorage.SPRINTS, Sprints);
+    }
+    
+    // Returns control to the Dashboard
+    returnControl = () =>  {
+      handleItemClick();
+    };
 
 
   /*
     Dashboard display functionality
   */
+
+  /*
+    Main Dashboard logic.
+    Sprint Creation modal is on each sub-page so that sprint creation can be done from any part of the screen.
+  */
   displayPage() {
     if (this.state.page == "product-backlog") {
       return (
         <React.Fragment>
+          {/* Allow sprint creation */}
           <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
+          {/* Modal to allow tasks to be moved out of sprints */}
           <MoveItem open={this.state.moveTask} handleSelectedMoveLocation={this.handleSelectedMoveLocation} sprints={Sprints}/>
+          {/* DataGrid of Tasks*/}
           <ProductItemsDataGrid data={Tasks} 
             teamMembers={TeamMembers}
             editing={this.state.editingTask}
@@ -286,7 +418,10 @@ class DashboardContent extends React.Component {
     else if (this.state.page == "team") {
       return (
         <React.Fragment>
+        {/* Allow sprint creation */}
+        <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
         <Grid container spacing={3} alignItems="center">
+          {/* Display time graph */}
           <Grid item xs={12} style={{textAlign: "center"}}>
             <Typography id="modal-modal-title" variant="h6" component="h3">
               Team Timelog Graph
@@ -297,13 +432,16 @@ class DashboardContent extends React.Component {
             <TeamTimeDashboard teamMembers={TeamMembers} start={this.state.graphStartDate} end={this.state.graphEndDate} setStart={this.setStart} setEnd={this.setEnd}/>
           </Grid>
           <Grid item xs={2}></Grid>
+          {/* Allow team member creation*/}
           <TeamMemberModal open={this.state.creatingTeam} handleTeamMemberAdd={this.handleTeamMemberAdd} teamMembers={TeamMembers} />
+          {/* Add ability to view specific team member stats */}
           <TeamMemberView open={this.state.viewingTeamMember} start={this.state.graphStartDate} end={this.state.graphEndDate} toggle={this.toggleViewTeamMember} user={this.state.viewMember}/>
           <Grid item xs={12} style={{textAlign: "center"}}>
             <Typography id="modal-modal-title" variant="h6" component="h3">
               Team Members
             </Typography>
           </Grid>
+          {/* See all team members */}
           <Grid item xs={12} style={{textAlign: "center"}}>
             <TeamInfo teamMembers={TeamMembers} handleTeamMemberDelete={this.handleTeamMemberDelete} toggleView={this.toggleViewTeamMember}/>
           </Grid>
@@ -323,18 +461,30 @@ class DashboardContent extends React.Component {
 
       return (
         <React.Fragment>
+          {/* Allow sprint creation */}
           <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
-          <DisplaySprint sprintData={sprintData} enableLock={this.canSprintBeEnabled(sprintData)} handleSprintStatusChange={this.handleSprintStatusChange(sprintData)}/>
+          {/* Display information on the current sprint*/}
+          <DisplaySprint sprintData={sprintData} enableLock={this.disableSprintEnable(sprintData)} handleSprintStatusChange={this.handleSprintStatusChange(sprintData)}/>
         </React.Fragment>
       )
     }
     
   }
 
+  /*
+    Toggle the state of the drawer (either expand or close)
+  */
   toggleDrawer = () => {
     this.setState({open: !this.state.open})
   };
 
+  /*
+    Set the specific page that we want to look at.
+    If we are trying to create a sprint, then open the specific modal.
+    Otherwise just move to the specified page
+
+    @param page The page to move to
+  */
   setPageName = (page) => {
     // Check if we are trying to create a new sprint or just change page
     if (page == "new-sprint") {
@@ -345,43 +495,14 @@ class DashboardContent extends React.Component {
     }
   };
 
-  saveTaskInfo = (info) => {
-    let taskIndex = this.getTaskIndex(this.state.displayTask);
-    if (taskIndex == -1) {
-      Tasks.push(info)
-    }
-    else {
-      Tasks[taskIndex] = info;
-    }
-    LocalStorage.set(LocalStorage.TASKS, Tasks);
-  }
+  /*
+    Add Button functionality
+  */
 
-  // Create a pop-up when a row is clicked
-  // Returns to the main dashboard if rowID is not defined / null
-  handleItemClick = (rowID, editing=false) => {
-    this.setState({displayTask: rowID, editingTask: editing})
-  };
-
-  handleMoveItem = (rowID) => {
-    this.setState({moveTask: true, taskToMove: rowID})
-  }
-
-  handleSelectedMoveLocation = (moveSprint) => {
-    this.setState({moveTask: false})
-    for (let i = 0; i < Sprints.length; i++) {
-      if (Sprints[i].sprintName == moveSprint) {
-        Sprints[i].addTask(this.state.taskToMove)
-        break
-      }
-    }
-    LocalStorage.set(LocalStorage.SPRINTS, Sprints);
-  }
-  
-  // Returns control to the Dashboard
-  returnControl = () =>  {
-    handleItemClick();
-  };
-
+  /*
+    Changes the state accordingly when the add button is pressed based on the current page that is being viewed.
+    Does nothing if the user is looking at a sprint.
+  */
   handleAddButtonClick() {
     if (this.state.page === "team") {
       this.setState({creatingTeam: true})
@@ -391,6 +512,9 @@ class DashboardContent extends React.Component {
     }
   }
 
+  /*
+    Returns the React object to render for the Add Button (modularity!)
+  */
   AddButton() {
     return (
       <React.Fragment>
@@ -401,11 +525,15 @@ class DashboardContent extends React.Component {
     )
   }
 
+  /* 
+    Main render function. Combines all the functions and sub-classes above/in other files to render the Dashboard.
+  */
   render() {
     return (
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: 'flex' }}>
           <CssBaseline />
+          {/* Toolbar */}
           <AppBar position="absolute" open={this.state.open}>
             <Toolbar
               sx={{
@@ -446,11 +574,13 @@ class DashboardContent extends React.Component {
                 px: [1],
               }}
             >
+              {/* Toolbar collapse/expand */}
               <IconButton onClick={this.toggleDrawer}>
                 <ChevronLeftIcon />
               </IconButton>
             </Toolbar>
             <Divider />
+            {/* Page navigation via ListItems*/}
             <List component="nav">
               <ListItems handleClick={this.setPageName} data={Sprints}/>
             </List>
@@ -471,6 +601,7 @@ class DashboardContent extends React.Component {
             <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
               <Grid container spacing={3}>             
                 <Grid item xs={12}>
+                  {/* Display all other parts of the page dependent on what page we are on.*/ }
                   {this.displayPage()}
                 </Grid>
               </Grid>

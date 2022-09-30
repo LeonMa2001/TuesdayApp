@@ -1,3 +1,7 @@
+/*
+  Sidebar functionality. Allows for the dynamic creation of list rows based on sprint creations.
+*/
+
 import * as React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -9,11 +13,13 @@ import AddBox from '@mui/icons-material/AddBox';
 
 
 class ListItems extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
+  /*
+    Generates the React components based on the provided Sprint information passed as a prop.
+  */
   getSprints() {
     return this.props.data.map((item) => {
       return (
@@ -27,6 +33,11 @@ class ListItems extends React.Component {
     })
   }
 
+  /*
+    Renders the main taskbar list.
+    This includes the Product Backlog, New Sprint button, Team management page, as well as the dynamically
+    created list of Sprints.
+  */
   render() {
     return (
       <React.Fragment>
