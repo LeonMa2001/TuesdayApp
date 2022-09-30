@@ -33,7 +33,7 @@ class TaskData {
     get tag(){ return this._tag; }
     get timeLog(){ return this._timeLog; }
     get priority(){ return this._priority; }
-    get assignees(){ return this._assigness; }
+    get assignees(){ return this._assignees; }
     get id(){ return this._id }
 
     static fromData(dataList){

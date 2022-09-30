@@ -1,3 +1,7 @@
+/*
+  Sidebar functionality. Allows for the dynamic creation of list rows based on sprint creations.
+*/
+
 import * as React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -5,14 +9,35 @@ import ListItemText from '@mui/material/ListItemText';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import GroupIcon from '@mui/icons-material/Group';
+import AddBox from '@mui/icons-material/AddBox';
 
 
 class ListItems extends React.Component {
-
   constructor(props) {
     super(props);
   }
 
+  /*
+    Generates the React components based on the provided Sprint information passed as a prop.
+  */
+  getSprints() {
+    return this.props.data.map((item) => {
+      return (
+        <ListItemButton key={item.sprintName} onClick={() => this.props.handleClick(item.sprintName)}>
+          <ListItemIcon>
+            <DirectionsWalkIcon />
+          </ListItemIcon>
+          <ListItemText primary={item.sprintName} />
+        </ListItemButton>
+      )
+    })
+  }
+
+  /*
+    Renders the main taskbar list.
+    This includes the Product Backlog, New Sprint button, Team management page, as well as the dynamically
+    created list of Sprints.
+  */
   render() {
     return (
       <React.Fragment>
@@ -22,23 +47,12 @@ class ListItems extends React.Component {
           </ListItemIcon>
           <ListItemText primary="Product Backlog" />
         </ListItemButton>
-        <ListItemButton onClick={() => this.props.handleClick("sprint-1")}>
+        {this.getSprints()}
+        <ListItemButton onClick={() => this.props.handleClick("new-sprint")}>
           <ListItemIcon>
-            <DirectionsWalkIcon />
+            <AddBox />
           </ListItemIcon>
-          <ListItemText primary="Sprint 1" />
-        </ListItemButton>
-        <ListItemButton onClick={() => this.props.handleClick("sprint-2")}>
-          <ListItemIcon>
-            <DirectionsWalkIcon />
-          </ListItemIcon>
-          <ListItemText primary="Sprint 2" />
-        </ListItemButton>
-        <ListItemButton onClick={() => this.props.handleClick("sprint-3")}>
-          <ListItemIcon>
-            <DirectionsWalkIcon />
-          </ListItemIcon>
-          <ListItemText primary="Sprint 3" />
+          <ListItemText primary="New Sprint" />
         </ListItemButton>
         <ListItemButton onClick={() => this.props.handleClick("team")}>
           <ListItemIcon>
@@ -46,6 +60,7 @@ class ListItems extends React.Component {
           </ListItemIcon>
           <ListItemText primary="Team" />
         </ListItemButton>
+        
       </React.Fragment>
       )
   }
