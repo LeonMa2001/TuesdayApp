@@ -257,7 +257,7 @@ class ProductItemsDataGrid extends React.Component {
     */
     displayComponent() {
         if (this.props.displayItem) {
-            return <Task rowID={this.props.displayItem} teamMembers={this.props.teamMembers} returnControl={this.props.handleItemClick} editing={this.props.editing} data={this.getCorrectRow()} saveInfo={this.props.saveInfo}/>
+          return <Task rowID={this.props.displayItem} teamMembers={this.props.teamMembers} returnControl={this.props.handleItemClick} editing={this.props.editing} data={this.getCorrectRow()} saveInfo={this.props.saveInfo} showTimeLog={true} />
         }
         return this.generateDataGrid();
 

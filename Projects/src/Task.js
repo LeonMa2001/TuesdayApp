@@ -8,6 +8,8 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import IconButton from '@mui/material/IconButton';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 
 // TODO (possibly) make this more readable by making it an object
@@ -17,17 +19,18 @@ const Fields = [
     ["Tag", "tag", "N/A", () => false, ""],
     ["Priority", "priority", "N/A", () => false, ""],
     ["Story Points", "points", "N/A", (value) => value < 0 || value > 9, "Story Points must be between 0 and 9"],
-    ["Assignee", "assignees", "Not Assigned", () => false, ""],
+    ["Assignee", "assignee", "N/A", () => false, ""],
     ["Status", "status", "N/A", () => false, ""],
     ["Type", "taskType", "N/A", () => false, ""],
     ["Description", "desc", "N/A", () => false, ""],
+    ["Time Log", "timeLog", "N/A", () => false, ""]
 ]
 
 const SelectFields = {
     priority: ["Low", "Medium", "High", "Critical"],
     tag: ["Core", "User Interface", "Testing"],
     status: ["Not Started", "In Progress", "Completed"],
-    assignees: [],
+    assignee: [],
     taskType: ["User Story", "Bug"]
 }
 
@@ -42,9 +45,9 @@ class Task extends React.Component {
 
         this.handleInputChange.bind(this)
         
-        SelectFields.assignees = [];
+        SelectFields.assignee = [];
         this.props.teamMembers.forEach(member => {
-            SelectFields.assignees.push(member.name);
+            SelectFields.assignee.push(member.name);
         });
     }
 
@@ -53,39 +56,39 @@ class Task extends React.Component {
         if (this.state.editing) { 
             // Check if any fields are erroring
             const isValid = Fields.reduce((acc, item) => {
-                return acc && !item[3](this.state.data[item[1]]) // if any errors, this will return false
-            }, true)
+                return acc && !item[3](this.state.data[item[1]]); // if any errors, this will return false
+            }, true);
 
             if (isValid) {
-                this.setState({editing: false})
-                this.props.saveInfo(this.state.data)
+                this.setState({ editing: false });
+                this.props.saveInfo(this.state.data);
             }
         }
         else { // begin editing
-            this.setState({editing: true})
+            this.setState({ editing: true });
         }
     }
 
     // Keep track of values when they get updated. this.state[] will have the current value of every field.
     handleInputChange(event) {
-        this.state.data[event.target.id ?? event.target.name] = event.target.value
-        this.setState({ 
+        this.state.data[event.target.id ?? event.target.name] = event.target.value;
+        this.setState({
             data: this.state.data
-        })
+        });
     }
 
     // Header is the only field that is required, so handle it separately:
     parseHeader() {
         if (this.state.editing) {
             return (
-                <Grid item xs={8} sx={{display: "flex", alignItems: "center"}}>
-                    <TextField id={"taskName"} variant="outlined" fullWidth defaultValue={this.state.data.taskName ?? ""} 
-                    onChange={this.handleInputChange.bind(this)} 
-                    error={this.state.data.taskName.length == 0} 
-                    helperText={this.state.data.taskName.length == 0 ? "Story must have a name" : ""} 
+                <Grid item xs={8} sx={{ display: "flex", alignItems: "center" }}>
+                    <TextField id={"taskName"} variant="outlined" fullWidth defaultValue={this.state.data.taskName ?? ""}
+                        onChange={this.handleInputChange.bind(this)}
+                        error={this.state.data.taskName.length == 0}
+                        helperText={this.state.data.taskName.length == 0 ? "Story must have a name" : ""}
                     />
                 </Grid>
-            )
+            );
         }
 
         return (
@@ -108,10 +111,13 @@ class Task extends React.Component {
     // Parse the rest of the data and return either text or an editing box depending on type
     parseData() {
         return Fields.map((item) => { 
+            if (item[1] == 'timeLog' && !this.props.showTimeLog) {
+                return;
+            }
             if (this.state.editing) {
                 let editField;
                 // Create drop-down lists for the required options
-                if (["status", "taskType", "priority", "assignees", "tag"].includes(item[1])) {
+                if (["status", "taskType", "priority", "assignee", "tag"].includes(item[1])) {
                     editField = (
                         <FormControl fullWidth>
                             <Select id={item[1]} name={item[1]} onChange={this.handleInputChange.bind(this)} value={this.state.data[item[1]] ?? ""}>
@@ -122,6 +128,22 @@ class Task extends React.Component {
                             </Select>
                         </FormControl>
                     )
+                }
+                else if (item[1] === 'timeLog') {
+                    editField = (
+                        <Grid container spacing={1} alignItems="center">
+                            <Grid item xs={6} style={{textAlign: "left"}}>
+                                <Typography>
+                                    Total : {this.state.data.getTotalTime()} hrs
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6} style={{textAlign: "center"}}>
+                                <IconButton color="inherit" onClick={() => this.handleAddButtonClick()}>
+                                    <AddCircleIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    );
                 }
                 // Otherwise use text boxes
                 else {

@@ -1,14 +1,14 @@
 class UserData {
-    constructor(id = '', name = '', email = '', timelog = []){
+    constructor(id, name, email, timelog) {
         this._id = id;
         this._name = name;
         this._email = email;
-        this._timeLog = timelog;
+        this._timeLog = timelog ?? []; // stored as [{task: ..., date: ..., time: ...}, ...]
     }
 
-    get name(){ return this._name; }
-    get email(){ return this._email; }
-    get id() {return this._id; }
+    get name() { return this._name; }
+    get email() { return this._email; }
+    get id() { return this._id; }
 
     static fromData(dataList){
         return dataList.map(data => {
@@ -16,8 +16,8 @@ class UserData {
         })
     }
 
-    createData() { return {id: this._id, name: this._name, email: this._email, hours: this.getTotalTime()}; }
-    
+    createData() { return { id: this._id, name: this._name, email: this._email, hours: this.getTotalTime() }; }
+
     /* 
         Get the total time worked on tasks on a specific date
 
@@ -27,9 +27,7 @@ class UserData {
         let total = 0;
         for (let i = 0; i < this._timeLog.length; i++) {
             const log = this._timeLog[i];
-            if (log.date === date) {
-                total += log.time;
-            }
+            if (log.date === date) total += log.time;
         }
         return total;
     }
@@ -41,6 +39,17 @@ class UserData {
         let total = 0;
         this._timeLog.forEach(log => total += log.time);
         return total;
+    }
+
+    /* 
+        Add a timelog to the user
+    */
+    addTimelog(task, date, time) {
+        this._timeLog.push({
+            date: date,
+            time: time,
+            task: task
+        });
     }
 }
 
