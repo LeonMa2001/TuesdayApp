@@ -168,8 +168,12 @@ class Task extends React.Component {
                 {this.parseHeader()}
                 <Grid item xs={4} sx={{display: "flex", justifyContent: "flex-end"}}>
                     <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{m:1}}> 
-                        <Button onClick={() => this.toggleEditing()}>{this.state.editing ? "Save" : "Edit"}</Button>
-                        <Button onClick={() => this.props.returnControl()}>Close</Button>
+                        <Button onClick={() => this.toggleEditing()} disabled={this.state.data.taskName === ''}>{this.state.editing ? "Save" : "Edit"}</Button>
+                            {
+                                !this.state.editing ? // only show the close button on the view page not the edit page
+                                <Button onClick={() => this.props.returnControl()}>Close</Button> :
+                                    ''
+                            }
                     </ButtonGroup> 
                 </Grid>
                 {this.parseData()}
