@@ -124,6 +124,32 @@ class Task extends React.Component {
                     )
                 }
                 // Otherwise use text boxes
+                else if (item[1] == 'points') {
+                    editField = (
+                        <TextField
+                            fullWidth
+                            value={this.state.data.points}
+                            type="number"
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, max: 9 }}
+                            onChange={(e) => {
+                                let value;
+                                try {
+                                    value = parseFloat(e.target.value); // ensure inputted value is a valid number
+                                    if (isNaN(value)) throw 'NaN';
+                                    if (value < 0) throw 'Negative';
+                                    if (value > 9) throw 'Too high'
+                                }
+                                catch (err) {
+                                   value = err == 'Too High' ? 9 : 0;
+                                }
+                                this.state.data.points = value;
+                                this.setState({
+                                    data: this.state.data
+                                });
+                            }}
+                        />
+                    );
+                }
                 else {
                     editField = (
                         <TextField id={item[1]} variant="outlined" fullWidth defaultValue={this.state.data[item[1]] ?? ""} 
