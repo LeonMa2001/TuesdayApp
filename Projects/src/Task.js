@@ -10,6 +10,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import TimelogModal from './TimelogModal';
 
 
 // TODO (possibly) make this more readable by making it an object
@@ -40,7 +41,8 @@ class Task extends React.Component {
         super(props)
         this.state = {
             editing: props.editing ?? false, // nullish coalescing operator (left if not null/undefined, otherwise right)
-            data: this.props.data
+            data: this.props.data,
+            addingTimeLog: false
         } 
 
         this.handleInputChange.bind(this)
@@ -75,6 +77,11 @@ class Task extends React.Component {
         this.setState({
             data: this.state.data
         });
+    }
+
+    // Toggle the timelog modal
+    toggleTimeLog() {
+        this.setState({ addingTimeLog: !this.state.addingTimeLog });
     }
 
     // Header is the only field that is required, so handle it separately:
@@ -138,7 +145,7 @@ class Task extends React.Component {
                                 </Typography>
                             </Grid>
                             <Grid item xs={6} style={{textAlign: "center"}}>
-                                <IconButton color="inherit" onClick={() => this.handleAddButtonClick()}>
+                                <IconButton color="inherit" onClick={() => this.toggleTimeLog()}>
                                     <AddCircleIcon />
                                 </IconButton>
                             </Grid>
@@ -176,7 +183,11 @@ class Task extends React.Component {
                         {item[0]}
                     </Typography>
                     <Typography variant="body1" style={{whiteSpace: 'pre-wrap'}} /* handle newlines in the description field */> 
-                        {this.state.data[item[1]] ?? item[2] /* If no data (null or undefined) use redundency message*/}
+                            {
+                                item[1] == 'timeLog' ?
+                                `Total: ${this.state.data.getTotalTime()} hrs` : 
+                                this.state.data[item[1]] ?? item[2] /* If no data (null or undefined) use redundency message*/
+                            }
                     </Typography>
                 </div>
             </Grid>)
@@ -186,21 +197,24 @@ class Task extends React.Component {
     render() {
         return (
             <Paper elevation={3}>
-            <Grid container>
-                {this.parseHeader()}
-                <Grid item xs={4} sx={{display: "flex", justifyContent: "flex-end"}}>
-                    <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{m:1}}> 
-                        <Button onClick={() => this.toggleEditing()}>{this.state.editing ? "Save" : "Edit"}</Button>
-                        <Button onClick={() => this.props.returnControl()}>Close</Button>
-                    </ButtonGroup> 
+                <TimelogModal
+                    open={this.state.addingTimeLog}
+                    toggle={this.toggleTimeLog.bind(this)}
+                    task={this.state.data}
+                    team={this.props.teamMembers}
+                    addTimeLog={this.props.addTimeLog}
+                    />
+                <Grid container>
+                    {this.parseHeader()}
+                    <Grid item xs={4} sx={{display: "flex", justifyContent: "flex-end"}}>
+                        <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{m:1}}> 
+                            <Button onClick={() => this.toggleEditing()}>{this.state.editing ? "Save" : "Edit"}</Button>
+                            <Button onClick={() => this.props.returnControl()}>Close</Button>
+                        </ButtonGroup> 
+                    </Grid>
+                    {this.parseData()}
                 </Grid>
-                {this.parseData()}
-
-            </Grid>
-
             </Paper>
-
-
         )
     }
 }

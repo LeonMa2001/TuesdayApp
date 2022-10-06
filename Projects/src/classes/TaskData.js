@@ -42,11 +42,16 @@ class TaskData {
 
     /* 
         Add a timelog to the task
+
+        @param userID   The id of the user that worked on this task
+        @param date     The date that this task has been worked on in (DD/MM)
+        @param time     The amount of time spent on the task on this date
     */
-    addTimelog = (user, date, time) => this._timeLog.push({ date: date, time: time, user: user })
+    addTimelog = (userID, date, time) => this._timeLog.push({ date: date, time: time, userID: userID })
 
     /*
         Get total time worked on the task
+        
     */
     getTotalTime() {
         let total = 0;

@@ -43,14 +43,13 @@ class UserData {
 
     /* 
         Add a timelog to the user
+
+        @param taskID   The id of the task this user has worked on
+        @param date     The date that this task has been worked on in (DD/MM)
+        @param time     The amount of time spent on the task on this date
     */
-    addTimelog(task, date, time) {
-        this._timeLog.push({
-            date: date,
-            time: time,
-            task: task
-        });
-    }
+    addTimelog = (taskID, date, time) => this._timeLog.push({ date: date, time: time, taskID: taskID });
+    
 }
 
 export default UserData;

@@ -380,6 +380,22 @@ class DashboardContent extends React.Component {
       }
       LocalStorage.set(LocalStorage.SPRINTS, Sprints);
     }
+  
+  /* 
+    Add a timelog to a task / user
+
+    @param name   The name of the user who worked on the task
+    @param task   The task that the user worked on
+    @param time   The amount of time spent on the task
+    @param date   The date of the timelog
+  */
+  addTimeLog(name, task, time, date) {
+    const user = TeamMembers.find((user) => user.name === name);
+    user.addTimelog(task.id, date.format('DD/MM'), time);
+    task.addTimelog(user.id, date.format('DD/MM'), time);
+    LocalStorage.set(LocalStorage.USERS, TeamMembers);
+    LocalStorage.set(LocalStorage.TASKS, Tasks);
+    }
     
     // Returns control to the Dashboard
     returnControl = () =>  {
@@ -411,7 +427,9 @@ class DashboardContent extends React.Component {
             saveInfo={this.saveTaskInfo} 
             handleItemClick={this.handleItemClick} 
             handleMoveItem={this.handleMoveItem}
-            sprintTasks={this.getSprintTasks()}/>
+            sprintTasks={this.getSprintTasks()}
+            addTimeLog={this.addTimeLog}
+            />
         </React.Fragment>
       )
     }

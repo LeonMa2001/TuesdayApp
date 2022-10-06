@@ -256,8 +256,17 @@ class ProductItemsDataGrid extends React.Component {
       Displays the task if specified, optionally in editing mode.
     */
     displayComponent() {
-        if (this.props.displayItem) {
-          return <Task rowID={this.props.displayItem} teamMembers={this.props.teamMembers} returnControl={this.props.handleItemClick} editing={this.props.editing} data={this.getCorrectRow()} saveInfo={this.props.saveInfo} showTimeLog={true} />
+      if (this.props.displayItem) {
+          return <Task
+            rowID={this.props.displayItem}
+            teamMembers={this.props.teamMembers}
+            returnControl={this.props.handleItemClick}
+            editing={this.props.editing}
+            data={this.getCorrectRow()}
+            saveInfo={this.props.saveInfo}
+            showTimeLog={false} /* THIS VALUE DETERMINES WHETHER YOU CAN EDIT THE TIMELOG */
+            addTimeLog={this.props.addTimeLog}
+            />
         }
         return this.generateDataGrid();
 
