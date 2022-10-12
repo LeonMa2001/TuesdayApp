@@ -464,10 +464,17 @@ class DashboardContent extends React.Component {
           {/* Allow sprint creation */}
           <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
           {/* Display information on the current sprint*/}
-          <DisplaySprint sprintData={sprintData} enableLock={this.disableSprintEnable(sprintData)} handleSprintStatusChange={this.handleSprintStatusChange(sprintData)}/>
+          <DisplaySprint taskData={Tasks} sprintData={sprintData} enableLock={this.disableSprintEnable(sprintData)} handleSprintStatusChange={this.handleSprintStatusChange(sprintData)}/>
         </React.Fragment>
       )
     }
+
+    /* TODO:
+    let filteredData = this.props.taskData.filter(task => this.props.sprintData.tasks.includes(task.id))
+    // list of tasks to display with all the data
+    // This returns a list of objects into filteredData and allows access for me to retrieve the specific to tasks
+    // and put them into the kanban board automatically.
+    */
     
   }
 

@@ -260,7 +260,9 @@ class ProductItemsDataGrid extends React.Component {
             return <Task rowID={this.props.displayItem} teamMembers={this.props.teamMembers} returnControl={this.props.handleItemClick} editing={this.props.editing} data={this.getCorrectRow()} saveInfo={this.props.saveInfo}/>
         }
         return this.generateDataGrid();
-
+    //TODO:
+    // ShowTimeLog = True?
+    // change return to kanban board burn-down chart
     }
 
     /*
