@@ -9,6 +9,11 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Paper from '@mui/material/Paper';
 import ButtonGroup from '@mui/material/ButtonGroup';
  
+//TODO: Started here
+import { Avatar, Card, CardContent, Chip } from '@material-ui/core'
+import { AvatarGroup } from '@material-ui/lab'
+import { makeStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
 
 const defaultState = {
     name: "",
@@ -235,7 +240,8 @@ export class DisplaySprint extends React.Component {
                       </Typography>
                   </Grid>
                   <Grid item xs={12} sx={{m:1}}>
-                      {/* TODO implement Kanban board in future sprint*/}
+                      <Board>
+                        </Board>
                       <Typography>
                           Not implemented
                       </Typography>
@@ -246,7 +252,7 @@ export class DisplaySprint extends React.Component {
           
       )
   }
-}
+  }
 
 
 export class MoveItem extends React.Component {
@@ -316,4 +322,51 @@ export class MoveItem extends React.Component {
           </div>
         )
   }
+}
+
+//TODO: Started here
+export const Board = ({ board }) => {
+  const classes = useStyles()
+  return (
+    <Card
+      className={clsx(classes.cardRoot, {
+        waitingBoard: board.status === "Waiting",
+        successBoard: board.status === "Approved"
+      })}
+      variant="outlined"
+      style={{ borderLeft: `5px solid ${board.category.color}` }}
+    >
+      <div className={classes.details}>
+        <CardContent className={classes.content}>
+          <Typography component="h5" variant="h6">
+            {board.title}
+          </Typography>
+          <Grid item xs={12}>
+            <Box component="small" m={1}>
+              <Typography variant='body2'>{board.start}</Typography>
+            </Box>
+            {/* <Box component="small" m={1}>
+              <Typography variant='body2'>{board.status}</Typography>
+            </Box> */}
+          </Grid>
+          <Grid item xs={12} className={classes.bottomBox}>
+            {
+              board.category.title && <Chip
+                size="small"
+                label={board.category.title}
+                style={{ backgroundColor: board.category.color, color: '#fff' }}
+              />
+            }
+            <AvatarGroup max={4} className={classes.members}>
+              {board.members.map(item => {
+                return (
+                  <Avatar key={item.id} alt={item.name} src={`/${item.avatar}.jpg`} />
+                )
+              })}
+            </AvatarGroup>
+          </Grid>
+        </CardContent>
+      </div>
+    </Card>
+  )
 }
