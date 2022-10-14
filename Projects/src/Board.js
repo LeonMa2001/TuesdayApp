@@ -104,3 +104,31 @@ export const Board = ({ board }) => {
     </Card>
   )
 }
+
+// Psuedocode for kanban logic, cant make kanban interface work
+/*
+complete = []
+started = []
+working_on_it = []
+
+for (i=0; i<range(len(filteredData)); i++){
+	if (filteredData[i].status == "Complete"){
+		complete.append(filteredData[i]);
+	} else if (filteredData[i].status == "Started")
+		started.append(filteredData[i]);
+	else if (filteredData[i].status == "Working on it")
+		working_on_it.append(filteredData[i]);
+}
+
+for (i=0; i<range(len(complete)); i++){
+	put_to_website(complete[i]);
+}
+
+for (i=0; i<range(len(started)); i++){
+	put_to_website(started[i]);
+}
+
+for (i=0; i<range(len(working_on_it)); i++){
+	put_to_website(working_on_it[i]);
+}
+*/
