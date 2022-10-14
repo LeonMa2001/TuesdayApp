@@ -241,6 +241,7 @@ export class DisplaySprint extends React.Component {
                   </Grid>
                   <Grid item xs={12} sx={{m:1}}>
                       <Board>
+                        Board
                         </Board>
                       <Typography>
                           Not implemented
