@@ -9,28 +9,11 @@ import ListItemText from '@mui/material/ListItemText';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import GroupIcon from '@mui/icons-material/Group';
-import AddBox from '@mui/icons-material/AddBox';
 
 
 class ListItems extends React.Component {
   constructor(props) {
     super(props);
-  }
-
-  /*
-    Generates the React components based on the provided Sprint information passed as a prop.
-  */
-  getSprints() {
-    return this.props.data.map((item) => {
-      return (
-        <ListItemButton key={item.sprintName} onClick={() => this.props.handleClick(item.sprintName)}>
-          <ListItemIcon>
-            
-          </ListItemIcon>
-          <ListItemText primary={item.sprintName} />
-        </ListItemButton>
-      )
-    })
   }
 
   /*
@@ -52,13 +35,6 @@ class ListItems extends React.Component {
             <DirectionsWalkIcon />
           </ListItemIcon>
           <ListItemText primary="Sprints" />
-        </ListItemButton>
-        {this.getSprints()}
-        <ListItemButton onClick={() => this.props.handleClick("new-sprint")}>
-          <ListItemIcon>
-            <AddBox />
-          </ListItemIcon>
-          <ListItemText primary="New Sprint" />
         </ListItemButton>
         <ListItemButton onClick={() => this.props.handleClick("team")}>
           <ListItemIcon>

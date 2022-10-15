@@ -214,8 +214,6 @@ class DashboardContent extends React.Component {
     Returns true if there is already a started sprint.
   */
   disableSprintEnable = () => {
-    console.log(Sprints)
-    console.log(!Sprints.every(item => item.status !== "In Progress"))
     return !Sprints.every(item => item.status !== "In Progress")
   }
 
@@ -232,18 +230,25 @@ class DashboardContent extends React.Component {
   }
 
   /*
-    Deletes the sprint from the list of sprints
+    Deletes the sprint from the list of sprints.
+    Also deletes all tasks within the sprint.
 
     @param name The name of the sprint to delete
   */
 
-  handleDeleteItem = (sprintName) => {
+  handleDeleteSprint = (sprintName) => {
     let sprintIndex = this.getSprintIndex(sprintName);
     if (sprintIndex == -1) {
       console.log("[ERR] Unknown sprint to delete!");
     }
     else {
-      Sprints.splice(sprintIndex, 1);
+      let removedSprint = Sprints.splice(sprintIndex, 1);
+
+      // Delete all tasks within the sprint
+      for (let i = 0; i < removedSprint[0].tasks.length; i++ ) {
+        this.handleDeleteItem(removedSprint[0].tasks[i])
+      }
+
     }
     LocalStorage.set(LocalStorage.SPRINTS, Sprints);
     this.forceUpdate();
@@ -257,7 +262,7 @@ class DashboardContent extends React.Component {
   */
   getSprintIndex = (sprintName) => {
     for (let i in Sprints) {
-      if (Sprints[i].id == sprintName) {
+      if (Sprints[i].sprintName == sprintName) {
         return i
       }
     }
@@ -271,7 +276,6 @@ class DashboardContent extends React.Component {
     @param sprintName   The name corresponding to the sprint that was clicked on.
   */
   handleSprintClick = (sprintName) => {
-    console.log(sprintName)
     this.setState({displaySprintName: sprintName})
   };
 
@@ -529,6 +533,7 @@ class DashboardContent extends React.Component {
             enableLock={this.disableSprintEnable()} 
             handleSprintStatusChange={this.handleSprintStatusChange(this.state.displaySprintName)}
             handleSprintClick={this.handleSprintClick}
+            handleDeleteSprint={this.handleDeleteSprint}
             />
         </React.Fragment>
       )
@@ -557,13 +562,18 @@ class DashboardContent extends React.Component {
     @param page The page to move to
   */
   setPageName = (page) => {
-    // Check if we are trying to create a new sprint or just change page
-    if (page == "new-sprint") {
-      this.createSprint()
-    }
-    else {
-      this.setState({page})
-    }
+    // Switch to the page we want and stop editing/viewing anything
+      this.setState({page,
+        displayTask: "",
+        editingTask: false,
+        creatingTeam: false,
+        creatingSprint: false,
+        taskToMove: "",
+        moveTask: false,
+        viewingTeamMember: false,
+        viewMember: undefined,
+        displaySprintName: undefined
+      })    
   }
 
   /*
@@ -572,7 +582,6 @@ class DashboardContent extends React.Component {
 
   /*
     Changes the state accordingly when the add button is pressed based on the current page that is being viewed.
-    Does nothing if the user is looking at a sprint.
   */
   handleAddButtonClick() {
     if (this.state.page === "team") {
@@ -581,6 +590,16 @@ class DashboardContent extends React.Component {
     else if (this.state.page === "product-backlog") {
       this.createNewTask();
     }
+    else if (this.state.page === "sprints") {
+      this.createSprint();
+    }
+  }
+
+  /*
+    Returns true if the add button should be disabled (either because we're looking at a task/sprint).
+  */
+  disableAddButton() {
+    return this.state.displaySprintName || this.state.displayTask
   }
 
   /*
@@ -589,7 +608,10 @@ class DashboardContent extends React.Component {
   AddButton() {
     return (
       <React.Fragment>
-        <IconButton color="inherit" onClick={() => this.handleAddButtonClick()}>
+        <IconButton color="inherit" 
+                    onClick={() => this.handleAddButtonClick()}
+                    disabled={this.disableAddButton()}
+                    >
               <AddCircleIcon />
         </IconButton>
       </React.Fragment>

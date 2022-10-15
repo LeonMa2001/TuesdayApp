@@ -4,22 +4,14 @@
 */
 
 import React from 'react';
-import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
+import { Button, Box } from '@mui/material';
 import { DisplaySprint } from './Sprint.js'
 import clsx from 'clsx';
 import LinearProgress from '@mui/material/LinearProgress';
-import { styled } from '@mui/material/styles';
-import { CustomToolbar, StyledGridOverlay, CustomNoRowsOverlay } from './graphics/DataGridGraphics.js'
-
+import { CustomToolbar, CustomNoRowsOverlay } from './graphics/DataGridGraphics.js'
 import {
     DataGrid,
-    GridToolbarContainer,
-    GridToolbarFilterButton
 } from '@mui/x-data-grid';
-import EditIcon from '@mui/icons-material/Edit';
-import DriveFileMove from '@mui/icons-material/DriveFileMove';
-import Task from './Task.js'
-import TaskData from "./classes/TaskData.js"
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
  
 
@@ -40,23 +32,21 @@ const columnsFunc = (renderDeleteButton) => [
         headerName: 'Sprint Names',
         width: 300,
         editable: false,
-        sortable: false,
-        filterable: false,
+        sortable: false
     },
     { 
         field: 'startDate',
         headerName: 'Start Date',
         width: 300,
         editable: false,
-        sortable: false,
+        sortable: false
     },
     { 
         field: 'endDate',
         headerName: 'End Date',
         width: 300,
         editable: false,
-        sortable: false,
-        filterable: false,
+        sortable: false
     },
     { 
         field: 'status',
@@ -74,29 +64,16 @@ const columnsFunc = (renderDeleteButton) => [
         });
         },
         editable: false,
-        sortable: false,
-        filterable: false,
+        sortable: false
     },
     {
       field: "deleteTask",
       headerName: "",
       width: 100,
       renderCell: renderDeleteButton,
-      sortable: false,
-      filterable: false,
+      sortable: false
     }
 ];
-
-
-function createData(data) {
-    return {
-      id: data.id,
-      name: data.taskName,
-      tag: data.tag,
-      priority: data.priority,
-      points: data.points
-    };
-  }
 
 export default class DisplaySprints extends React.Component {
     constructor(props) {
@@ -170,6 +147,7 @@ export default class DisplaySprints extends React.Component {
                     pageSize={5}
                     autoHeight
                     disableColumnMenu
+                    disableColumnFilter
                     rowsPerPageOptions={[5]}
                     disableSelectionOnClick
                     experimentalFeatures={{ newEditingApi: true }}
@@ -183,8 +161,6 @@ export default class DisplaySprints extends React.Component {
       Gets the sprint data corresponding to the provided name
     */
     getSprintData() {
-        console.log(this.props.data)
-        console.log(this.props.displaySprintName)
         return this.props.data.filter(sprint => sprint.sprintName == this.props.displaySprintName)[0]
     }
 
@@ -195,7 +171,7 @@ export default class DisplaySprints extends React.Component {
     */
     displayComponent() {
         if (this.props.displaySprintName) {
-            return <DisplaySprint sprintData={this.getSprintData()} enableLock={this.props.enableLock} />
+            return <DisplaySprint sprintData={this.getSprintData()} enableLock={this.props.enableLock} handleSprintStatusChange={this.props.handleSprintStatusChange}/>
         }
         return this.generateDataGrid();
 
