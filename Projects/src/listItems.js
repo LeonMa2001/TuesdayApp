@@ -25,7 +25,7 @@ class ListItems extends React.Component {
       return (
         <ListItemButton key={item.sprintName} onClick={() => this.props.handleClick(item.sprintName)}>
           <ListItemIcon>
-            <DirectionsWalkIcon />
+            
           </ListItemIcon>
           <ListItemText primary={item.sprintName} />
         </ListItemButton>
@@ -46,6 +46,12 @@ class ListItems extends React.Component {
             <FormatListNumberedIcon />
           </ListItemIcon>
           <ListItemText primary="Product Backlog" />
+        </ListItemButton>
+        <ListItemButton onClick={() => this.props.handleClick("sprints")}>
+          <ListItemIcon>
+            <DirectionsWalkIcon />
+          </ListItemIcon>
+          <ListItemText primary="Sprints" />
         </ListItemButton>
         {this.getSprints()}
         <ListItemButton onClick={() => this.props.handleClick("new-sprint")}>

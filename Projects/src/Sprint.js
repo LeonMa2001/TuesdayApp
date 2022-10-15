@@ -192,6 +192,10 @@ const nextStatus = {
 export class DisplaySprint extends React.Component { 
   /*  
     Displays sprint data and (in a future sprint) the Kanban board of tasks
+
+    props:
+    sprintData
+    enableLock
   */
   constructor(props) {
       super(props)
@@ -216,7 +220,7 @@ export class DisplaySprint extends React.Component {
                   <Grid item xs={4} sx={{display: "flex", justifyContent: "flex-end"}}>
                       <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{m:1}}> 
                           <Button 
-                              disabled={this.props.enableLock && !this.props.sprintData.status == "In Progress" || this.props.sprintData.status == "Completed"} 
+                              disabled={this.props.enableLock && this.props.sprintData.status !== "In Progress" || this.props.sprintData.status == "Completed"} 
                               onClick={() => this.props.handleSprintStatusChange(nextStatus[this.props.sprintData.status])}>
                               {this.props.sprintData.status == "Not Started" ? "Start Sprint" : this.props.sprintData.status == "In Progress" ? "End Sprint" : "Sprint Over"}
                           </Button>
