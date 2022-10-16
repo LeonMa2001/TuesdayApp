@@ -8,6 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Paper from '@mui/material/Paper';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import dayjs from 'dayjs';
  
 
 const defaultState = {
@@ -76,6 +77,8 @@ export default class NewSprintModal extends React.Component {
             inputFormat="DD/MM/YYYY"
             onChange={(e) => this.timeChanged(e, state_name)}
             required
+            minDate={state_name == "end_date" && this.state.start_date ? this.state.start_date.add(1, "day") : dayjs()}
+            maxDate={state_name == "start_date" && this.state.end_date ? this.state.end_date.subtract(1, "day") : null}
             renderInput={(params) => <TextField {...params} helperText={state_name == "end_date" && this.state.timeError[0] ? this.state.timeError[1] : ""}/>}
             error={state_name == "end_date" && this.state.timeError[0]}
         />
@@ -192,6 +195,10 @@ const nextStatus = {
 export class DisplaySprint extends React.Component { 
   /*  
     Displays sprint data and (in a future sprint) the Kanban board of tasks
+
+    props:
+    sprintData
+    enableLock
   */
   constructor(props) {
       super(props)
@@ -216,7 +223,7 @@ export class DisplaySprint extends React.Component {
                   <Grid item xs={4} sx={{display: "flex", justifyContent: "flex-end"}}>
                       <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{m:1}}> 
                           <Button 
-                              disabled={this.props.enableLock && !this.props.sprintData.status == "In Progress" || this.props.sprintData.status == "Completed"} 
+                              disabled={this.props.enableLock && this.props.sprintData.status !== "In Progress" || this.props.sprintData.status == "Completed"} 
                               onClick={() => this.props.handleSprintStatusChange(nextStatus[this.props.sprintData.status])}>
                               {this.props.sprintData.status == "Not Started" ? "Start Sprint" : this.props.sprintData.status == "In Progress" ? "End Sprint" : "Sprint Over"}
                           </Button>

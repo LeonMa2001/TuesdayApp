@@ -23,6 +23,7 @@ import SprintData from './classes/SprintData.js'
 import TeamTimeDashboard from './TeamTimeDashboard';
 import dayjs from 'dayjs';
 import TeamMemberView from './TeamMemberView';
+import SprintDataGrid from './SprintDataGrid.js'
 
 
 /*
@@ -158,7 +159,8 @@ class DashboardContent extends React.Component {
       viewingTeamMember: false,
       graphStartDate: dayjs().subtract(5, 'day'),
       graphEndDate: dayjs(), // initialise the dates
-      viewMember: undefined
+      viewMember: undefined,
+      displaySprintName: undefined
     }
   }
 
@@ -189,16 +191,16 @@ class DashboardContent extends React.Component {
   }
 
   /*
-    Given a specific sprint and a new state of the sprint, updates the storage for the sprint 
+    Given a specific sprint name and a new state of the sprint, updates the storage for the sprint 
     and refreshes the rendering to display the change.
 
-    @param sprint   The sprint to update
+    @param sprintName   The sprintName to update
     @param newState The new status to store for the provided sprint
   */
-  handleSprintStatusChange = (sprint) => (newState) => {
+  handleSprintStatusChange = (sprintName) => (newState) => {
     // Find the index to change
     for (let i = 0; i < Sprints.length; i++) {
-      if (Sprints[i].sprintName == sprint.sprintName) {
+      if (Sprints[i].sprintName == sprintName) {
         Sprints[i].status = newState
         break
       }
@@ -226,6 +228,56 @@ class DashboardContent extends React.Component {
     }
     return output
   }
+
+  /*
+    Deletes the sprint from the list of sprints.
+    Also deletes all tasks within the sprint.
+
+    @param name The name of the sprint to delete
+  */
+
+  handleDeleteSprint = (sprintName) => {
+    let sprintIndex = this.getSprintIndex(sprintName);
+    if (sprintIndex == -1) {
+      console.log("[ERR] Unknown sprint to delete!");
+    }
+    else {
+      let removedSprint = Sprints.splice(sprintIndex, 1);
+
+      // Delete all tasks within the sprint
+      for (let i = 0; i < removedSprint[0].tasks.length; i++ ) {
+        this.handleDeleteItem(removedSprint[0].tasks[i])
+      }
+
+    }
+    LocalStorage.set(LocalStorage.SPRINTS, Sprints);
+    this.forceUpdate();
+  }
+
+  /*
+    Gets the index of a sprint in the Sprints list.
+    Each sprint requires a unique name
+
+    @param sprintName   The unique name of the sprint to search for
+  */
+  getSprintIndex = (sprintName) => {
+    for (let i in Sprints) {
+      if (Sprints[i].sprintName == sprintName) {
+        return i
+      }
+    }
+    return -1
+  }
+
+  /*
+    Navigate to the specific sprint when a sprint is clicked.
+    Returns to the main sprint dashboard if editing is not provided.
+
+    @param sprintName   The name corresponding to the sprint that was clicked on.
+  */
+  handleSprintClick = (sprintName) => {
+    this.setState({displaySprintName: sprintName})
+  };
 
   /*
     Team member creation/deletion/graphing functions
@@ -289,7 +341,7 @@ class DashboardContent extends React.Component {
   }
 
   /*
-    Task creation / editing functionality
+    Task creation / editing / deleting functionality
   */
 
   /*
@@ -333,53 +385,72 @@ class DashboardContent extends React.Component {
 
     @param info The task info to add / update in local storage.
   */
-    saveTaskInfo = (info) => {
-      let taskIndex = this.getTaskIndex(this.state.displayTask);
-      if (taskIndex == -1) {
-        Tasks.push(info)
-      }
-      else {
-        Tasks[taskIndex] = info;
-      }
-      LocalStorage.set(LocalStorage.TASKS, Tasks);
+  saveTaskInfo = (info) => {
+    let taskIndex = this.getTaskIndex(this.state.displayTask);
+    if (taskIndex == -1) {
+      Tasks.push(info)
     }
-  
-    /*
-      Create a pop-up when a row is clicked
-      Returns to the main dashboard if rowID is not defined / null.
-
-      @param rowID    The row ID corresponding to the task that was clicked on.
-      @param editing  Whether to begin editing the specified task
-    */
-    handleItemClick = (rowID, editing=false) => {
-      this.setState({displayTask: rowID, editingTask: editing})
-    };
-  
-    /*
-      Opens the move item modal when a task is selected to be moved.
-
-      @param rowID  The row ID corresponding to the task that should be moved into a sprint.
-    */
-    handleMoveItem = (rowID) => {
-      this.setState({moveTask: true, taskToMove: rowID})
+    else {
+      Tasks[taskIndex] = info;
     }
+    LocalStorage.set(LocalStorage.TASKS, Tasks);
+  }
   
-    /*
-      Moves the specified task into the selected sprint and updates local storage accordingly.
-      The task to move should be stored in this.state.taskToMove
+  /*
+    Create a pop-up when a row is clicked
+    Returns to the main dashboard if rowID is not defined / null.
 
-      @param moveSprint   The name of the sprint to move the task to.
-    */
-    handleSelectedMoveLocation = (moveSprint) => {
-      this.setState({moveTask: false})
-      for (let i = 0; i < Sprints.length; i++) {
-        if (Sprints[i].sprintName == moveSprint) {
-          Sprints[i].addTask(this.state.taskToMove)
-          break
-        }
+    @param rowID    The row ID corresponding to the task that was clicked on.
+    @param editing  Whether to begin editing the specified task
+  */
+  handleItemClick = (rowID, editing=false) => {
+    this.setState({displayTask: rowID, editingTask: editing})
+  };
+
+  /*
+    Opens the move item modal when a task is selected to be moved.
+
+    @param rowID  The row ID corresponding to the task that should be moved into a sprint.
+  */
+  handleMoveItem = (rowID) => {
+    this.setState({moveTask: true, taskToMove: rowID})
+  }
+
+  /*
+    Deletes the task from the product backlog
+
+    @param rowID  The row ID corresponding to the task that should be deleted
+  */
+
+  handleDeleteItem = (rowID) => {
+    let taskIndex = this.getTaskIndex(rowID);
+    if (taskIndex == -1) {
+      console.log("[ERR] Unknown task to delete!");
+    }
+    else {
+      Tasks.splice(taskIndex, 1);
+    }
+    LocalStorage.set(LocalStorage.TASKS, Tasks);
+    this.forceUpdate();
+  }
+
+  
+  /*
+    Moves the specified task into the selected sprint and updates local storage accordingly.
+    The task to move should be stored in this.state.taskToMove
+
+    @param moveSprint   The name of the sprint to move the task to.
+  */
+  handleSelectedMoveLocation = (moveSprint) => {
+    this.setState({moveTask: false})
+    for (let i = 0; i < Sprints.length; i++) {
+      if (Sprints[i].sprintName == moveSprint) {
+        Sprints[i].addTask(this.state.taskToMove)
+        break
       }
-      LocalStorage.set(LocalStorage.SPRINTS, Sprints);
     }
+    LocalStorage.set(LocalStorage.SPRINTS, Sprints);
+  }
   
   /* 
     Add a timelog to a task / user
@@ -401,6 +472,13 @@ class DashboardContent extends React.Component {
     returnControl = () =>  {
       handleItemClick();
     };
+    
+  
+  // Returns control to the Dashboard
+  returnControl = () =>  {
+    handleItemClick();
+  };
+
 
 
   /*
@@ -427,9 +505,9 @@ class DashboardContent extends React.Component {
             saveInfo={this.saveTaskInfo} 
             handleItemClick={this.handleItemClick} 
             handleMoveItem={this.handleMoveItem}
-            sprintTasks={this.getSprintTasks()}
             addTimeLog={this.addTimeLog}
-            />
+            handleDeleteItem={this.handleDeleteItem}
+            sprintTasks={this.getSprintTasks()}/>
         </React.Fragment>
       )
     }
@@ -467,26 +545,29 @@ class DashboardContent extends React.Component {
       </React.Fragment>
       )
     }
-    else {
-      // Should be a sprint, so try to get the info for the sprint
-      let sprintData = Sprints.find(item => item.sprintName == this.state.page) // returns undefined if nothing
-      if (!sprintData) {
-        return (
-          <Typography>
-            Shouldn't be here!
-          </Typography>
-      )}
-
+    else if (this.state.page == "sprints") {
       return (
         <React.Fragment>
           {/* Allow sprint creation */}
           <NewSprintModal open={this.state.creatingSprint} handleSprintAdd={this.handleSprintAdd} sprints={Sprints}/>
           {/* Display information on the current sprint*/}
-          <DisplaySprint sprintData={sprintData} enableLock={this.disableSprintEnable(sprintData)} handleSprintStatusChange={this.handleSprintStatusChange(sprintData)}/>
+          <SprintDataGrid data={Sprints} 
+            displaySprintName={this.state.displaySprintName} 
+            enableLock={this.disableSprintEnable()} 
+            handleSprintStatusChange={this.handleSprintStatusChange(this.state.displaySprintName)}
+            handleSprintClick={this.handleSprintClick}
+            handleDeleteSprint={this.handleDeleteSprint}
+            />
         </React.Fragment>
       )
     }
-    
+    else {
+      return (
+        <Typography>
+          Shouldn't be here!
+        </Typography>
+      )
+    }
   }
 
   /*
@@ -504,14 +585,19 @@ class DashboardContent extends React.Component {
     @param page The page to move to
   */
   setPageName = (page) => {
-    // Check if we are trying to create a new sprint or just change page
-    if (page == "new-sprint") {
-      this.createSprint()
-    }
-    else {
-      this.setState({page})
-    }
-  };
+    // Switch to the page we want and stop editing/viewing anything
+      this.setState({page,
+        displayTask: "",
+        editingTask: false,
+        creatingTeam: false,
+        creatingSprint: false,
+        taskToMove: "",
+        moveTask: false,
+        viewingTeamMember: false,
+        viewMember: undefined,
+        displaySprintName: undefined
+      })    
+  }
 
   /*
     Add Button functionality
@@ -519,7 +605,6 @@ class DashboardContent extends React.Component {
 
   /*
     Changes the state accordingly when the add button is pressed based on the current page that is being viewed.
-    Does nothing if the user is looking at a sprint.
   */
   handleAddButtonClick() {
     if (this.state.page === "team") {
@@ -528,6 +613,16 @@ class DashboardContent extends React.Component {
     else if (this.state.page === "product-backlog") {
       this.createNewTask();
     }
+    else if (this.state.page === "sprints") {
+      this.createSprint();
+    }
+  }
+
+  /*
+    Returns true if the add button should be disabled (either because we're looking at a task/sprint).
+  */
+  disableAddButton() {
+    return this.state.displaySprintName || this.state.displayTask
   }
 
   /*
@@ -536,7 +631,10 @@ class DashboardContent extends React.Component {
   AddButton() {
     return (
       <React.Fragment>
-        <IconButton color="inherit" onClick={() => this.handleAddButtonClick()}>
+        <IconButton color="inherit" 
+                    onClick={() => this.handleAddButtonClick()}
+                    disabled={this.disableAddButton()}
+                    >
               <AddCircleIcon />
         </IconButton>
       </React.Fragment>
