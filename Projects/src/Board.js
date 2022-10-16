@@ -3,6 +3,7 @@ import { Avatar, Card, CardContent, Chip, Grid, Typography, Box } from '@materia
 import { AvatarGroup } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
+import { Chart } from 'react-chartjs-2'
 
 const useStyles = makeStyles((theme) => ({
   boardCard: {

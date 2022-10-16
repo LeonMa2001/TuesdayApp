@@ -240,9 +240,9 @@ export class DisplaySprint extends React.Component {
                       </Typography>
                   </Grid>
                   <Grid item xs={12} sx={{m:1}}>
-                      <Board>
+                      {/* <Board>
                         Board
-                        </Board>
+                        </Board> */}
                       <Typography>
                           Not implemented
                       </Typography>
@@ -325,7 +325,8 @@ export class MoveItem extends React.Component {
   }
 }
 
-//TODO: Started here
+// Leon started here
+/*
 export const Board = ({ board }) => {
   const classes = useStyles()
   return (
@@ -346,9 +347,9 @@ export const Board = ({ board }) => {
             <Box component="small" m={1}>
               <Typography variant='body2'>{board.start}</Typography>
             </Box>
-            {/* <Box component="small" m={1}>
+            { <Box component="small" m={1}>
               <Typography variant='body2'>{board.status}</Typography>
-            </Box> */}
+            </Box> }
           </Grid>
           <Grid item xs={12} className={classes.bottomBox}>
             {
@@ -371,3 +372,4 @@ export const Board = ({ board }) => {
     </Card>
   )
 }
+*/
