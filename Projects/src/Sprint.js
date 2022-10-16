@@ -8,12 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Paper from '@mui/material/Paper';
 import ButtonGroup from '@mui/material/ButtonGroup';
- 
-//TODO: Started here
-import { Avatar, Card, CardContent, Chip } from '@material-ui/core'
-import { AvatarGroup } from '@material-ui/lab'
-import { makeStyles } from '@material-ui/core/styles'
-import clsx from 'clsx'
+import KanbanBoard from './KanbanBoard';
 
 const defaultState = {
     name: "",
@@ -240,12 +235,7 @@ export class DisplaySprint extends React.Component {
                       </Typography>
                   </Grid>
                   <Grid item xs={12} sx={{m:1}}>
-                      {/* <Board>
-                        Board
-                        </Board> */}
-                      <Typography>
-                          Not implemented
-                      </Typography>
+                    <KanbanBoard sprintData={this.props.sprintData} />
                   </Grid>
 
               </Grid>

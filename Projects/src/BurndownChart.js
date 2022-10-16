@@ -29,7 +29,7 @@ for (let i = 0; i < dates.length; i++) {
 
 //TODO: this needs to store a list of strings that denote the x axis
 const labels = [];
-for (i=0; i<daysShown); i++{ // Needs to loop over what x axis labels are needed
+for (i=0; i<daysShown; i++){ // Needs to loop over what x axis labels are needed
     labels.append(data[i]) //TODO: This is just a guess, I dont't understand how this data is retrieved yet
 }
 

@@ -374,7 +374,7 @@ class DashboardContent extends React.Component {
       this.setState({moveTask: false})
       for (let i = 0; i < Sprints.length; i++) {
         if (Sprints[i].sprintName == moveSprint) {
-          Sprints[i].addTask(this.state.taskToMove)
+          Sprints[i].addTask(Tasks.find((task) => task.id === this.state.taskToMove))
           break
         }
       }
