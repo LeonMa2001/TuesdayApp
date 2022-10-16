@@ -13,14 +13,17 @@ import {
     DataGrid,
 } from '@mui/x-data-grid';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import dayjs from 'dayjs';
+dayjs.extend(advancedFormat);
  
 
 function createSprintData(data) {
     return {
         id: data.sprintName,
         name: data.sprintName,
-        startDate: data.startDate,
-        endDate: data.endDate,
+        startDate: data.startDate.format('dddd, Do MMMM YYYY'),
+        endDate: data.endDate.format('dddd, Do MMMM YYYY'),
         status: data.status
     };
 }
