@@ -209,9 +209,22 @@ export class DisplaySprint extends React.Component {
     Main render function.
   */
   render() {
+    if (this.props.displayItem) {
+      return (
+        <KanbanBoard
+                sprintData={this.props.sprintData} 
+                teamMembers={this.props.teamMembers}
+                editing={this.props.editing}
+                handleItemClick={this.props.handleItemClick} 
+                displayItem={this.props.displayItem} 
+                saveInfo={this.props.saveInfo}
+                addTimeLog={this.props.addTimeLog}
+                />
+      )
+    }
       return (
           <Paper elevation={3}>
-              <Grid container>
+              <Grid container spacing={3} alignItems="center">
                   <Grid item xs={8} sx={{display: "flex", alignItems: "left"}}>
                       {/* Display sprint name */}
                       <Typography variant="h4">
@@ -242,8 +255,21 @@ export class DisplaySprint extends React.Component {
                           {"Status: " + this.props.sprintData.status}
                       </Typography>
                   </Grid>
-                  <Grid item xs={12} sx={{m:1}}>
-                    <KanbanBoard sprintData={this.props.sprintData} />
+            <Grid item xs={12} style={{textAlign: "center"}}>
+              <Typography variant="h6" component="h2">
+                Sprint Tasks
+              </Typography>
+              </Grid>
+              <Grid item xs={12} style={{textAlign: "center"}}>
+              <KanbanBoard
+                sprintData={this.props.sprintData} 
+                teamMembers={this.props.teamMembers}
+                editing={this.props.editing}
+                handleItemClick={this.props.handleItemClick} 
+                displayItem={this.props.displayItem} 
+                saveInfo={this.props.saveInfo}
+                addTimeLog={this.props.addTimeLog}
+                />
                   </Grid>
 
               </Grid>
@@ -322,52 +348,3 @@ export class MoveItem extends React.Component {
         )
   }
 }
-
-// Leon started here
-/*
-export const Board = ({ board }) => {
-  const classes = useStyles()
-  return (
-    <Card
-      className={clsx(classes.cardRoot, {
-        waitingBoard: board.status === "Waiting",
-        successBoard: board.status === "Approved"
-      })}
-      variant="outlined"
-      style={{ borderLeft: `5px solid ${board.category.color}` }}
-    >
-      <div className={classes.details}>
-        <CardContent className={classes.content}>
-          <Typography component="h5" variant="h6">
-            {board.title}
-          </Typography>
-          <Grid item xs={12}>
-            <Box component="small" m={1}>
-              <Typography variant='body2'>{board.start}</Typography>
-            </Box>
-            { <Box component="small" m={1}>
-              <Typography variant='body2'>{board.status}</Typography>
-            </Box> }
-          </Grid>
-          <Grid item xs={12} className={classes.bottomBox}>
-            {
-              board.category.title && <Chip
-                size="small"
-                label={board.category.title}
-                style={{ backgroundColor: board.category.color, color: '#fff' }}
-              />
-            }
-            <AvatarGroup max={4} className={classes.members}>
-              {board.members.map(item => {
-                return (
-                  <Avatar key={item.id} alt={item.name} src={`/${item.avatar}.jpg`} />
-                )
-              })}
-            </AvatarGroup>
-          </Grid>
-        </CardContent>
-      </div>
-    </Card>
-  )
-}
-*/

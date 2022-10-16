@@ -174,7 +174,17 @@ export default class DisplaySprints extends React.Component {
     */
     displayComponent() {
         if (this.props.displaySprintName) {
-            return <DisplaySprint sprintData={this.getSprintData()} enableLock={this.props.enableLock} handleSprintStatusChange={this.props.handleSprintStatusChange}/>
+            return <DisplaySprint
+                sprintData={this.getSprintData()}
+                enableLock={this.props.enableLock}
+                handleSprintStatusChange={this.props.handleSprintStatusChange} 
+                teamMembers={this.props.teamMembers}
+                editing={this.props.editing}
+                handleItemClick={this.props.handleItemClick} 
+                displayItem={this.props.displayItem} 
+                saveInfo={this.props.saveInfo}
+                addTimeLog={this.props.addTimeLog}
+                />
         }
         return this.generateDataGrid();
 

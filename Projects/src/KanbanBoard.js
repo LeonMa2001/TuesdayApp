@@ -5,6 +5,7 @@ Kanban Board ceation
 import { Grid, Typography } from '@mui/material';
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import Task from './Task';
 
 export default class KanbanBoard extends React.Component {
   constructor(props) {
@@ -37,13 +38,34 @@ export default class KanbanBoard extends React.Component {
     });
   }
 
+  /*
+      Gets the task data corresponding to the provided displayItem, else creating a new TaskData instance if 
+      it does not already exist.
+
+      Requires the data and displayItem prop to be set.
+    */
+      getCorrectRow() {
+        return this.props.sprintData.tasks.filter(task => task.id == this.props.displayItem)[0] ?? new TaskData(this.props.displayItem)
+      }
+
   render() {
     this.filterTasks();
-    console.log(this.inProgress, this.notStarted, this.completed)
+    if (this.props.displayItem) {
+      return <Task
+        rowID={this.props.displayItem}
+        teamMembers={this.props.teamMembers}
+        returnControl={this.props.handleItemClick}
+        editing={this.props.editing}
+        data={this.getCorrectRow()}
+        saveInfo={this.props.saveInfo}
+        showTimeLog={true}
+        addTimeLog={this.props.addTimeLog}
+        />
+    }
     return (
       <Grid container>
         <DataGrid
-          rows={this.notStarted.map((task) => { return {id: task.id, name: task.name} })}
+          rows={this.notStarted.map((task) => { return {id: task.id, name: task.taskName} })}
           columns={this.notStartedColumns}
           pageSize={5}
           autoHeight
@@ -51,10 +73,10 @@ export default class KanbanBoard extends React.Component {
           checkboxSelection
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
-          //onRowClick={(rowData) => this.props.toggleView(rowData.id)}
+          onRowClick = { (rowData) => this.props.handleItemClick(rowData.id) }
         />
         <DataGrid
-          rows={this.inProgress.map((task) => { return {id: task.id, name: task.name} })}
+          rows={this.inProgress.map((task) => { return {id: task.id, name: task.taskName} })}
           columns={this.inProgressColumns}
           pageSize={5}
           autoHeight
@@ -62,10 +84,10 @@ export default class KanbanBoard extends React.Component {
           checkboxSelection
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
-          //onRowClick={(rowData) => this.props.toggleView(rowData.id)}
+          onRowClick = { (rowData) => this.props.handleItemClick(rowData.id) }
         />
         <DataGrid
-          rows={this.completed.map((task) => { return {id: task.id, name: task.name} })}
+          rows={this.completed.map((task) => { return {id: task.id, name: task.taskName} })}
           columns={this.completedColumns}
           pageSize={5}
           autoHeight
@@ -73,7 +95,7 @@ export default class KanbanBoard extends React.Component {
           checkboxSelection
           disableSelectionOnClick
           experimentalFeatures={{ newEditingApi: true }}
-          //onRowClick={(rowData) => this.props.toggleView(rowData.id)}
+          onRowClick = { (rowData) => this.props.handleItemClick(rowData.id) }
         />
       </Grid>
     )

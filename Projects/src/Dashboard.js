@@ -405,7 +405,7 @@ class DashboardContent extends React.Component {
     @param editing  Whether to begin editing the specified task
   */
   handleItemClick = (rowID, editing=false) => {
-    this.setState({displayTask: rowID, editingTask: editing})
+    this.setState({displayTask: rowID ?? '', editingTask: editing})
   };
  
   /*
@@ -469,16 +469,6 @@ class DashboardContent extends React.Component {
     LocalStorage.set(LocalStorage.TASKS, Tasks);
     }
     
-    // Returns control to the Dashboard
-    returnControl = () =>  {
-      handleItemClick();
-    };
-    
-  
-  // Returns control to the Dashboard
-  returnControl = () =>  {
-    handleItemClick();
-  };
  
  
  
@@ -558,6 +548,12 @@ class DashboardContent extends React.Component {
             handleSprintStatusChange={this.handleSprintStatusChange(this.state.displaySprintName)}
             handleSprintClick={this.handleSprintClick}
             handleDeleteSprint={this.handleDeleteSprint}
+            teamMembers={TeamMembers}
+            editing={this.state.editingTask}
+            handleItemClick={this.handleItemClick} 
+            displayItem={this.state.displayTask} 
+            saveInfo={this.saveTaskInfo}
+            addTimeLog={this.addTimeLog}
             />
         </React.Fragment>
       )
@@ -623,7 +619,7 @@ class DashboardContent extends React.Component {
     Returns true if the add button should be disabled (either because we're looking at a task/sprint).
   */
   disableAddButton() {
-    return this.state.displaySprintName !== undefined  || this.state.displayTask !== ''
+    return this.state.displaySprintName !== undefined || this.state.displayTask !== '' 
   }
  
   /*

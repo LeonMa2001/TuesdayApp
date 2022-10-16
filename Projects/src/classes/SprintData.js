@@ -1,3 +1,5 @@
+import TaskData from './TaskData';
+
 const dayjs = require('dayjs')
 
 
@@ -30,7 +32,7 @@ class SprintData {
 
     static fromData(dataList){
         return dataList.map(data => {
-            return new SprintData(data._sprintName, dayjs(data._startDate), dayjs(data._endDate), data._status, data._tasks);
+            return new SprintData(data._sprintName, dayjs(data._startDate), dayjs(data._endDate), data._status, TaskData.fromData(data._tasks));
         })
     }
 }

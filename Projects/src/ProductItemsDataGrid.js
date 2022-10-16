@@ -194,9 +194,15 @@ class ProductItemsDataGrid extends React.Component {
       
       @param data   A list of tasks to filter on
     */
-    getRows = (data) => { 
-        const filteredData = data.filter(task => !this.props.sprintTasks.includes(task.id))
-        return filteredData.map(row => createData(row))
+  getRows = (data) => { 
+    const filteredData = [];
+    for (let i = 0; i < data.length; i++) {
+      const task = data[i];
+      if (!this.props.sprintTasks.find(sprintTask => sprintTask.id === task.id)) {
+        filteredData.push(task);
+      }
+    }
+    return filteredData.map(row => createData(row))
     }
 
     /*
