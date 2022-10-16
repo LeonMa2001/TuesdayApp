@@ -1,3 +1,7 @@
+/*
+Kanban Board ceation
+*/
+
 import React from 'react'
 import { Avatar, Card, CardContent, Chip, Grid, Typography, Box } from '@material-ui/core'
 import { AvatarGroup } from '@material-ui/lab'

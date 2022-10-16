@@ -1,4 +1,7 @@
 /*
+Burndown chart creation
+
+README:
 Install chart.js package:
 npm install chart.js --save
 */
@@ -90,5 +93,17 @@ let burndownChart = new Chart(mychart, {
     labels:labels,
     datasets:datasets
   },
-  options:{}
+  options:{
+    title:{
+        display:true,
+        test:'Burndown Chart',
+        fontSize:25,
+    },
+    legend:{
+        position:'right',
+        labels:{
+            fontColor:'black'
+        }
+    }
+  }
 });
