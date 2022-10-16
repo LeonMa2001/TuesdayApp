@@ -5,7 +5,6 @@ npm install chart.js --save
 
 /* TODO: Notes when editting
     When changing a variable to correct call, refactor to change all instances of variable
-    Also change rgb colours for different graphs if need be as all graph datasets are currently set to the same colour
 */
 
 import { Timeline } from "@material-ui/lab";
@@ -25,18 +24,23 @@ for (let i = 0; i < dates.length; i++) {
     }
 }
 
-/*TODO: this needs to store a list of strings that denote the x axis
-const labels = [dates[0], dates[1], date[2]...]
-*/
+//TODO: this needs to store a list of strings that denote the x axis
+const labels = [];
+for (i=0; i<daysShown); i++{ // Needs to loop over what x axis labels are needed
+    labels.append(data[i]) //TODO: This is just a guess, I dont't understand how this data is retrieved yet
+}
+
 //TODO: this needs to store a list of selected team member's datasets with given format as shown. 
 const datasets = []
+
+// Graph of team members
 // This loops over each selected team member and puts data into a unique dataset in the graph
 for (i=0; i<allSelectedTeammembers; i++){ //TODO: allSelectedTeammembers needs to replaced with actual check on who is selected for showing of data
   datasets.append({
     label: teammember[i].name, //TODO: Needs to be replaces with actual call to retrieve team member name
-    backgroundColor: 'rgb(255, 99, 132)',
-    borderColor: 'rgb(255, 99, 132)',
-    data: [0, 2, 5, 2, 7, 1, 2], //TODO: Needs to be replaced with their dataset
+    backgroundColor: 'blue',
+    borderColor: 'blue',
+    data: [0, 2, 5, 2, 7, 1, 2], //TODO: Needs to be replaced with their dataset of hours worked each day
   });
 }
 
@@ -47,8 +51,8 @@ for (i=0; i<length(graphTimeline); i++){ //TODO: Replace with how long of a time
 }
 datasets.append({
     label: 'Hours remaining',
-    backgroundColor: 'rgb(255, 99, 132)',
-    borderColor: 'rgb(255, 99, 132)',
+    backgroundColor: 'red',
+    borderColor: 'red',
     data: hoursRemaining,
 });
 
@@ -56,8 +60,8 @@ datasets.append({
 let accumilationOfEffort = workDoneOnGivenDay; 
 datasets.append({
     label: 'Accumilation of effort',
-    backgroundColor: 'rgb(255, 99, 132)',
-    borderColor: 'rgb(255, 99, 132)',
+    backgroundColor: 'orange',
+    borderColor: 'orange',
     data: accumilationOfEffort,
 });
 
@@ -73,17 +77,18 @@ for (i=0; i<length(graphTimeLine); i++){
 }
 datasets.append({
     label: 'Ideal velocity',
-    backgroundColor: 'rgb(255, 99, 132)',
-    borderColor: 'rgb(255, 99, 132)',
+    backgroundColor: 'green',
+    borderColor: 'green',
     data: idealVelocity,
 });
 
+// Creating chart with datasets
 let myChart = document.getElementById('myChart').getContext('2d');
-let massPopChart = new Chart(mychart, {
+let burndownChart = new Chart(mychart, {
   type:'line',
   data:{
     labels:labels,
     datasets:datasets
   },
-  options{}
-}
+  options:{}
+});
