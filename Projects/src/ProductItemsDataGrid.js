@@ -18,7 +18,7 @@ import Task from './Task.js'
 import TaskData from "./classes/TaskData.js"
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { CustomToolbar, StyledGridOverlay, CustomNoRowsOverlay } from './graphics/DataGridGraphics.js'
-
+import tagOperator from './TaskFilter.js';
 
 // Button credit to https://stackoverflow.com/questions/64331095/how-to-add-a-button-to-every-row-in-mui-datagrid
 const columnsFunc = (renderEditButton) => (renderMoveButton) => (renderDeleteButton) => [
@@ -47,6 +47,7 @@ const columnsFunc = (renderEditButton) => (renderMoveButton) => (renderDeleteBut
         },
         editable: false,
         sortable: false,
+        filterOperators: tagOperator,
     },
     { 
         field: 'priority',
@@ -259,7 +260,7 @@ class ProductItemsDataGrid extends React.Component {
                           {
                             columnField: 'tag',
                             operatorValue: 'equals',
-                            value: '',
+                            value: 'All',
                           },
                         ],
                       },
