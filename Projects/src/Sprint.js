@@ -8,6 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Paper from '@mui/material/Paper';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import dayjs from 'dayjs';
  
 
 const defaultState = {
@@ -76,6 +77,8 @@ export default class NewSprintModal extends React.Component {
             inputFormat="DD/MM/YYYY"
             onChange={(e) => this.timeChanged(e, state_name)}
             required
+            minDate={state_name == "end_date" && this.state.start_date ? this.state.start_date.add(1, "day") : dayjs()}
+            maxDate={state_name == "start_date" && this.state.end_date ? this.state.end_date.subtract(1, "day") : null}
             renderInput={(params) => <TextField {...params} helperText={state_name == "end_date" && this.state.timeError[0] ? this.state.timeError[1] : ""}/>}
             error={state_name == "end_date" && this.state.timeError[0]}
         />
