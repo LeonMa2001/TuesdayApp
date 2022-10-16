@@ -300,7 +300,9 @@ class ProductItemsDataGrid extends React.Component {
             />
         }
         return this.generateDataGrid();
-
+    //TODO:
+    // ShowTimeLog = True?
+    // change return to kanban board burn-down chart
     }
 
     /*

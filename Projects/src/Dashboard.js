@@ -446,7 +446,7 @@ class DashboardContent extends React.Component {
     this.setState({moveTask: false})
     for (let i = 0; i < Sprints.length; i++) {
       if (Sprints[i].sprintName == moveSprint) {
-        Sprints[i].addTask(this.state.taskToMove)
+        Sprints[i].addTask(Tasks.find((task) => task.id === this.state.taskToMove));
         break
       }
     }
@@ -623,7 +623,7 @@ class DashboardContent extends React.Component {
     Returns true if the add button should be disabled (either because we're looking at a task/sprint).
   */
   disableAddButton() {
-    return this.state.displaySprintName || this.state.displayTask
+    return this.state.displaySprintName !== undefined  || this.state.displayTask !== ''
   }
  
   /*
