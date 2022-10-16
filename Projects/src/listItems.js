@@ -24,25 +24,33 @@ class ListItems extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ListItemButton onClick={() => this.props.handleClick("product-backlog")}>
+        <ListItemButton 
+          selected={this.props.page === "product-backlog"} 
+          onClick={() => this.props.handleClick("product-backlog")}
+        >
           <ListItemIcon>
             <FormatListNumberedIcon />
           </ListItemIcon>
           <ListItemText primary="Product Backlog" />
         </ListItemButton>
-        <ListItemButton onClick={() => this.props.handleClick("sprints")}>
+        <ListItemButton 
+          selected={this.props.page === "sprints"} 
+          onClick={() => this.props.handleClick("sprints")}
+        >
           <ListItemIcon>
             <DirectionsWalkIcon />
           </ListItemIcon>
           <ListItemText primary="Sprints" />
         </ListItemButton>
-        <ListItemButton onClick={() => this.props.handleClick("team")}>
+        <ListItemButton 
+          selected={this.props.page === "team"} 
+          onClick={() => this.props.handleClick("team")}
+        >
           <ListItemIcon>
             <GroupIcon />
           </ListItemIcon>
           <ListItemText primary="Team" />
         </ListItemButton>
-        
       </React.Fragment>
       )
   }

@@ -691,7 +691,7 @@ class DashboardContent extends React.Component {
             <Divider />
             {/* Page navigation via ListItems*/}
             <List component="nav">
-              <ListItems handleClick={this.setPageName} data={Sprints}/>
+              <ListItems page={this.state.page} handleClick={this.setPageName} data={Sprints}/>
             </List>
           </Drawer>
           <Box
