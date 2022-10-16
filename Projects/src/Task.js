@@ -1,15 +1,15 @@
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Grid } from '@mui/material';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import * as React from 'react';
 import TimelogModal from './TimelogModal';
 
 
@@ -43,10 +43,10 @@ class Task extends React.Component {
             editing: props.editing ?? false, // nullish coalescing operator (left if not null/undefined, otherwise right)
             data: this.props.data,
             addingTimeLog: false
-        } 
+        }
 
         this.handleInputChange.bind(this)
-        
+
         SelectFields.assignee = [];
         this.props.teamMembers.forEach(member => {
             SelectFields.assignee.push(member.name);
@@ -55,7 +55,7 @@ class Task extends React.Component {
 
 
     toggleEditing() {
-        if (this.state.editing) { 
+        if (this.state.editing) {
             // Check if any fields are erroring
             const isValid = Fields.reduce((acc, item) => {
                 return acc && !item[3](this.state.data[item[1]]); // if any errors, this will return false
@@ -99,17 +99,17 @@ class Task extends React.Component {
         }
 
         return (
-            <Grid item xs={8} sx={{display: "flex", alignItems: "center"}}>
+            <Grid item xs={8} sx={{ display: "flex", alignItems: "center" }}>
                 {/* sx={{m:1}} creates a margin of unit size 1*/}
                 <Typography
                     component="h2"
                     variant="h6"
                     color="inherit"
-                    sx={{m:1}}
+                    sx={{ m: 1 }}
                 >
-                {/* Task Name */}
-                {this.state.data.taskName} 
-                </Typography> 
+                    {/* Task Name */}
+                    {this.state.data.taskName}
+                </Typography>
             </Grid>
         )
     }
@@ -117,7 +117,7 @@ class Task extends React.Component {
 
     // Parse the rest of the data and return either text or an editing box depending on type
     parseData() {
-        return Fields.map((item) => { 
+        return Fields.map((item) => {
             if (item[1] == 'timeLog' && !this.props.showTimeLog) {
                 return;
             }
@@ -131,7 +131,7 @@ class Task extends React.Component {
                                 {/* Map the options specified in SelectFields to options for this Select */}
                                 {SelectFields[item[1]].map((curItem) => {
                                     return <MenuItem key={curItem} value={curItem}>{curItem}</MenuItem>
-                                })}                              
+                                })}
                             </Select>
                         </FormControl>
                     )
@@ -139,12 +139,12 @@ class Task extends React.Component {
                 else if (item[1] === 'timeLog') {
                     editField = (
                         <Grid container spacing={1} alignItems="center">
-                            <Grid item xs={6} style={{textAlign: "left"}}>
+                            <Grid item xs={6} style={{ textAlign: "left" }}>
                                 <Typography>
                                     Total : {this.state.data.getTotalTime()} hrs
                                 </Typography>
                             </Grid>
-                            <Grid item xs={6} style={{textAlign: "center"}}>
+                            <Grid item xs={6} style={{ textAlign: "center" }}>
                                 <IconButton color="inherit" onClick={() => this.toggleTimeLog()}>
                                     <AddCircleIcon />
                                 </IconButton>
@@ -153,44 +153,70 @@ class Task extends React.Component {
                     );
                 }
                 // Otherwise use text boxes
+                else if (item[1] == 'points') {
+                    editField = (
+                        <TextField
+                            fullWidth
+                            value={this.state.data.points}
+                            type="number"
+                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, max: 9 }}
+                            onChange={(e) => {
+                                let value;
+                                try {
+                                    value = parseFloat(e.target.value); // ensure inputted value is a valid number
+                                    if (isNaN(value)) throw 'NaN';
+                                    if (value < 0) throw 'Negative';
+                                    if (value > 9) throw 'Too high'
+                                }
+                                catch (err) {
+                                    value = err == 'Too High' ? 9 : 0;
+                                }
+                                this.state.data.points = value;
+                                this.setState({
+                                    data: this.state.data
+                                });
+                            }}
+                        />
+                    );
+                }
                 else {
                     editField = (
-                        <TextField id={item[1]} variant="outlined" fullWidth defaultValue={this.state.data[item[1]] ?? ""} 
-                            onChange={this.handleInputChange.bind(this)} 
-                            error={item[3](this.state.data[item[1]])} 
+                        <TextField id={item[1]} variant="outlined" fullWidth defaultValue={this.state.data[item[1]] ?? ""}
+                            onChange={this.handleInputChange.bind(this)}
+                            error={item[3](this.state.data[item[1]])}
                             helperText={item[3](this.state.data[item[1]]) ? item[4] : ""}
                             multiline={item[1] == "description"} // this is bad, fix this
                         />
                     )
                 }
                 return (
-                    <Grid item key={item[0]} xs ={5} sx={{m:1}}>
-                    <div>
-                        <Typography component="h6" variant="h6">
-                            {item[0]}
-                        </Typography>
-                        
-                        {editField}
-                    </div>
-                </Grid>
+                    <Grid item key={item[0]} xs={5} sx={{ m: 1 }}>
+                        <div>
+                            <Typography component="h6" variant="h6">
+                                {item[0]}
+                            </Typography>
+
+                            {editField}
+                        </div>
+                    </Grid>
                 )
             }
             // Not editing so just put the actual text
             return (
-            <Grid item key={item[0]} xs ={5} sx={{m:1}}>
-                <div>
-                    <Typography component="h6" variant="h6">
-                        {item[0]}
-                    </Typography>
-                    <Typography variant="body1" style={{whiteSpace: 'pre-wrap'}} /* handle newlines in the description field */> 
+                <Grid item key={item[0]} xs={5} sx={{ m: 1 }}>
+                    <div>
+                        <Typography component="h6" variant="h6">
+                            {item[0]}
+                        </Typography>
+                        <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }} /* handle newlines in the description field */>
                             {
                                 item[1] == 'timeLog' ?
-                                `Total: ${this.state.data.getTotalTime()} hrs` : 
-                                this.state.data[item[1]] ?? item[2] /* If no data (null or undefined) use redundency message*/
+                                    `Total: ${this.state.data.getTotalTime()} hrs` :
+                                    this.state.data[item[1]] ?? item[2] /* If no data (null or undefined) use redundency message*/
                             }
-                    </Typography>
-                </div>
-            </Grid>)
+                        </Typography>
+                    </div>
+                </Grid>)
         })
     }
 
@@ -203,17 +229,22 @@ class Task extends React.Component {
                     task={this.state.data}
                     team={this.props.teamMembers}
                     addTimeLog={this.props.addTimeLog}
-                    />
+                />
                 <Grid container>
                     {this.parseHeader()}
-                    <Grid item xs={4} sx={{display: "flex", justifyContent: "flex-end"}}>
-                        <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{m:1}}> 
-                            <Button onClick={() => this.toggleEditing()}>{this.state.editing ? "Save" : "Edit"}</Button>
-                            <Button onClick={() => this.props.returnControl()}>Close</Button>
-                        </ButtonGroup> 
+                    <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                        <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{ m: 1 }}>
+                            <Button onClick={() => this.toggleEditing()} disabled={this.state.data.taskName === ''}>{this.state.editing ? "Save" : "Edit"}</Button>
+                            {
+                                !this.state.editing ? // only show the close button on the view page not the edit page
+                                    <Button onClick={() => this.props.returnControl()}>Close</Button> :
+                                    ''
+                            }
+                        </ButtonGroup>
                     </Grid>
                     {this.parseData()}
                 </Grid>
+
             </Paper>
         )
     }
