@@ -58,6 +58,18 @@ class TaskData {
         this._timeLog.forEach(log => total += log.time);
         return total;
     }
+
+    /*
+        Get total time worked on task on a particular date
+    */
+    getTotalTimeDate(date) {
+        let total = 0;
+        for (let i = 0; i < this._timeLog.length; i++) {
+            const log = this._timeLog[i];
+            if (log.date === date) total += log.time;
+        }
+        return total; 
+    }
 }
 
 export default TaskData;

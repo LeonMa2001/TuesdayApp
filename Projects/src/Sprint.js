@@ -6,11 +6,13 @@ import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import BurndownChart from './BurndownChart';
 import Paper from '@mui/material/Paper';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import dayjs from 'dayjs';
  
 import KanbanBoard from './KanbanBoard';
+import { Chart } from 'react-chartjs-2';
 
 const defaultState = {
     name: "",
@@ -193,7 +195,7 @@ const nextStatus = {
 }
 
 // TODO add actual sprint rendering stuff here
-export class DisplaySprint extends React.Component { 
+export class DisplaySprint extends React.Component {
   /*  
     Displays sprint data and (in a future sprint) the Kanban board of tasks
 
@@ -202,82 +204,95 @@ export class DisplaySprint extends React.Component {
     enableLock
   */
   constructor(props) {
-      super(props)
+    super(props)
   }
 
   /*
     Main render function.
   */
   render() {
+    let chart = '';
+    if (this.props.sprintData.status != 'Not Started') {
+      chart = (
+        <React.Fragment>
+        <Grid item xs={12} style={{ textAlign: "center" }}>
+          <Typography variant="h6" component="h2">
+            Burndown Chart
+          </Typography>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: "center" }}>
+          <BurndownChart sprintData={this.props.sprintData} />
+          </Grid>
+          </React.Fragment>
+      );
+    }
     if (this.props.displayItem) {
       return (
         <KanbanBoard
-                sprintData={this.props.sprintData} 
-                teamMembers={this.props.teamMembers}
-                editing={this.props.editing}
-                handleItemClick={this.props.handleItemClick} 
-                displayItem={this.props.displayItem} 
-                saveInfo={this.props.saveInfo}
-                addTimeLog={this.props.addTimeLog}
-                />
+          sprintData={this.props.sprintData}
+          teamMembers={this.props.teamMembers}
+          editing={this.props.editing}
+          handleItemClick={this.props.handleItemClick}
+          displayItem={this.props.displayItem}
+          saveInfo={this.props.saveInfo}
+          addTimeLog={this.props.addTimeLog}
+        />
       )
     }
-      return (
-          <Paper elevation={3}>
-              <Grid container spacing={3} alignItems="center">
-                  <Grid item xs={8} sx={{display: "flex", alignItems: "left"}}>
-                      {/* Display sprint name */}
-                      <Typography variant="h4">
-                          <b>
-                          {"Sprint: " + this.props.sprintData.sprintName}
-                          </b>
-                      </Typography>
-                  </Grid>
-                  {/* Display button to change sprint status */}
-                  <Grid item xs={4} sx={{display: "flex", justifyContent: "flex-end"}}>
-                      <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{m:1}}> 
-                          <Button 
-                              disabled={this.props.enableLock && this.props.sprintData.status !== "In Progress" || this.props.sprintData.status == "Completed"} 
-                              onClick={() => this.props.handleSprintStatusChange(nextStatus[this.props.sprintData.status])}>
-                              {this.props.sprintData.status == "Not Started" ? "Start Sprint" : this.props.sprintData.status == "In Progress" ? "End Sprint" : "Sprint Over"}
-                          </Button>
-                      </ButtonGroup> 
-                  </Grid>
-                  {/* Display information about the sprint (start + end date, sprint status) */}
-                  <Grid item xs={12} sx={{m:1}}>
-                      <Typography>
-                          {"Start date: " + this.props.sprintData.startDate.format('DD/MM/YYYY')}
-                      </Typography>
-                      <Typography>
-                          {"End date: " + this.props.sprintData.endDate.format('DD/MM/YYYY')}
-                      </Typography>
-                      <Typography>
-                          {"Status: " + this.props.sprintData.status}
-                      </Typography>
-                  </Grid>
-            <Grid item xs={12} style={{textAlign: "center"}}>
-              <Typography variant="h6" component="h2">
-                Sprint Tasks
-              </Typography>
-              </Grid>
-              <Grid item xs={12} style={{textAlign: "center"}}>
-              <KanbanBoard
-                sprintData={this.props.sprintData} 
-                teamMembers={this.props.teamMembers}
-                editing={this.props.editing}
-                handleItemClick={this.props.handleItemClick} 
-                displayItem={this.props.displayItem} 
-                saveInfo={this.props.saveInfo}
-                addTimeLog={this.props.addTimeLog}
-                />
-                  </Grid>
+    return (
+      <Grid container spacing={3} alignItems="center">
+        <Grid item xs={8} sx={{ display: "flex", alignItems: "left" }}>
+          {/* Display sprint name */}
+          <Typography variant="h4">
+            <b>
+              {"Sprint: " + this.props.sprintData.sprintName}
+            </b>
+          </Typography>
+        </Grid>
+        {/* Display button to change sprint status */}
+        <Grid item xs={4} sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <ButtonGroup variant="contained" aria-label="outlined primary button group" sx={{ m: 1 }}>
+            <Button
+              disabled={this.props.enableLock && this.props.sprintData.status !== "In Progress" || this.props.sprintData.status == "Completed"}
+              onClick={() => this.props.handleSprintStatusChange(nextStatus[this.props.sprintData.status])}>
+              {this.props.sprintData.status == "Not Started" ? "Start Sprint" : this.props.sprintData.status == "In Progress" ? "End Sprint" : "Sprint Over"}
+            </Button>
+          </ButtonGroup>
+        </Grid>
+        {/* Display information about the sprint (start + end date, sprint status) */}
+        <Grid item xs={12} sx={{ m: 1 }}>
+          <Typography>
+            {"Start date: " + this.props.sprintData.startDate.format('DD/MM/YYYY')}
+          </Typography>
+          <Typography>
+            {"End date: " + this.props.sprintData.endDate.format('DD/MM/YYYY')}
+          </Typography>
+          <Typography>
+            {"Status: " + this.props.sprintData.status}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: "center" }}>
+          <Typography variant="h6" component="h2">
+            Sprint Tasks
+          </Typography>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: "center" }}>
+          <KanbanBoard
+            sprintData={this.props.sprintData}
+            teamMembers={this.props.teamMembers}
+            editing={this.props.editing}
+            handleItemClick={this.props.handleItemClick}
+            displayItem={this.props.displayItem}
+            saveInfo={this.props.saveInfo}
+            addTimeLog={this.props.addTimeLog}
+          />
+        </Grid>
+        
+        {chart}
 
-              </Grid>
-          </Paper>
-          
-      )
+      </Grid >)
   }
-  }
+}
 
 
 export class MoveItem extends React.Component {

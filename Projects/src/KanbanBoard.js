@@ -51,6 +51,7 @@ export default class KanbanBoard extends React.Component {
   render() {
     this.filterTasks();
     if (this.props.displayItem) {
+      const task = this.props.sprintData.tasks.find(task => task.id === this.props.displayItem);
       return <Task
         rowID={this.props.displayItem}
         teamMembers={this.props.teamMembers}
@@ -58,7 +59,7 @@ export default class KanbanBoard extends React.Component {
         editing={this.props.editing}
         data={this.getCorrectRow()}
         saveInfo={this.props.saveInfo}
-        showTimeLog={true}
+        showTimeLog={task.status !== 'Not Started'}
         addTimeLog={this.props.addTimeLog}
         />
     }

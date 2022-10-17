@@ -12,7 +12,7 @@ class UserData {
 
     static fromData(dataList){
         return dataList.map(data => {
-            return new UserData(data._id, data._name, data._email, [])
+            return new UserData(data._id, data._name, data._email, data._timeLog);
         })
     }
 

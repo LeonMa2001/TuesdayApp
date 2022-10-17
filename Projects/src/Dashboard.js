@@ -446,11 +446,14 @@ class DashboardContent extends React.Component {
     this.setState({moveTask: false})
     for (let i = 0; i < Sprints.length; i++) {
       if (Sprints[i].sprintName == moveSprint) {
-        Sprints[i].addTask(Tasks.find((task) => task.id === this.state.taskToMove));
+        const task = Tasks.find((task) => task.id === this.state.taskToMove);
+        task.status = 'Not Started';
+        Sprints[i].addTask(task);
         break
       }
     }
     LocalStorage.set(LocalStorage.SPRINTS, Sprints);
+    LocalStorage.set(LocalStorage.TASKS, Tasks);
   }
   
   /* 
@@ -467,6 +470,7 @@ class DashboardContent extends React.Component {
     task.addTimelog(user.id, date.format('DD/MM'), time);
     LocalStorage.set(LocalStorage.USERS, TeamMembers);
     LocalStorage.set(LocalStorage.TASKS, Tasks);
+    LocalStorage.set(LocalStorage.SPRINTS, Sprints);
     }
     
  
