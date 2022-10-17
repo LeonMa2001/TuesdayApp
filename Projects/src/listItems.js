@@ -2,16 +2,11 @@
   Sidebar functionality. Allows for the dynamic creation of list rows based on sprint creations.
 */
 
-import * as React from 'react';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import GroupIcon from '@mui/icons-material/Group';
+import { DirectionsWalk as DirectionsWalkIcon, FormatListNumbered as FormatListNumberedIcon, Group as GroupIcon } from '@mui/icons-material';
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Component, Fragment } from 'react';
 
-
-class ListItems extends React.Component {
+class ListItems extends Component {
   constructor(props) {
     super(props);
   }
@@ -23,9 +18,9 @@ class ListItems extends React.Component {
   */
   render() {
     return (
-      <React.Fragment>
-        <ListItemButton 
-          selected={this.props.page === "product-backlog"} 
+      <Fragment>
+        <ListItemButton
+          selected={this.props.page === "product-backlog"}
           onClick={() => this.props.handleClick("product-backlog")}
         >
           <ListItemIcon>
@@ -33,8 +28,8 @@ class ListItems extends React.Component {
           </ListItemIcon>
           <ListItemText primary="Product Backlog" />
         </ListItemButton>
-        <ListItemButton 
-          selected={this.props.page === "sprints"} 
+        <ListItemButton
+          selected={this.props.page === "sprints"}
           onClick={() => this.props.handleClick("sprints")}
         >
           <ListItemIcon>
@@ -42,8 +37,8 @@ class ListItems extends React.Component {
           </ListItemIcon>
           <ListItemText primary="Sprints" />
         </ListItemButton>
-        <ListItemButton 
-          selected={this.props.page === "team"} 
+        <ListItemButton
+          selected={this.props.page === "team"}
           onClick={() => this.props.handleClick("team")}
         >
           <ListItemIcon>
@@ -51,8 +46,8 @@ class ListItems extends React.Component {
           </ListItemIcon>
           <ListItemText primary="Team" />
         </ListItemButton>
-      </React.Fragment>
-      )
+      </Fragment>
+    )
   }
 }
 

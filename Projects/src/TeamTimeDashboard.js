@@ -2,13 +2,13 @@
 // Last modified: 22/09/22
 // Modifier: Samir Gupta
 
-import React, {Component} from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip } from 'chart.js';
-import { Line } from 'react-chartjs-2';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { Grid, TextField } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { Grid, TextField } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { CategoryScale, Chart as ChartJS, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
+import React, { Component } from 'react';
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register( // registers the chart
     CategoryScale,
@@ -60,15 +60,15 @@ export default class TeamTimeDashboard extends Component {
         this.__generateDataSet(); // generate the data
         return (
             <Grid container spacing={3} alignItems="center">
-                <Grid item xs={12} style={{textAlign: "center"}}>
+                <Grid item xs={12} style={{ textAlign: "center" }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DesktopDatePicker // starting date picker
-                            label="Start date" 
+                            label="Start date"
                             inputFormat="DD/MM/YYYY"
                             value={this.props.start}
                             onChange={(newValue) => this.props.setStart(newValue)}
                             maxDate={this.props.end.subtract(1, 'day')} // can't be greater than or equal to the end date
-                            renderInput={(params) => <TextField {...params} /> }
+                            renderInput={(params) => <TextField {...params} />}
                         />
                     </LocalizationProvider>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -79,11 +79,11 @@ export default class TeamTimeDashboard extends Component {
                             onChange={(newValue) => this.props.setEnd(newValue)}
                             minDate={this.props.start.add(1, 'day')} // can't be smaller than or equal to the min date
                             disableFuture // can't be in the future
-                            renderInput={(params) => <TextField {...params} /> }
+                            renderInput={(params) => <TextField {...params} />}
                         />
                     </LocalizationProvider>
                 </Grid>
-                <Grid item xs={12} style={{textAlign: "center"}}>
+                <Grid item xs={12} style={{ textAlign: "center" }}>
                     <Line // render the line graph
                         datasetIdKey='id'
                         data={{
@@ -113,7 +113,7 @@ export default class TeamTimeDashboard extends Component {
                                         text: 'Number of Hours',
                                     },
                                 },
-                                x: { 
+                                x: {
                                     title: { // axis title
                                         display: true,
                                         text: 'Date',

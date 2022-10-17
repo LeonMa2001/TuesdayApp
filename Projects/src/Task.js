@@ -12,8 +12,6 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import TimelogModal from './TimelogModal';
 
-
-// TODO (possibly) make this more readable by making it an object
 // Human text bound to the object property as well as a redundency message
 // ["Human text", "Field Name", "Empty message text", Error boolean, Error helper text]
 const Fields = [

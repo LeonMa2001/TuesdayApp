@@ -1,4 +1,21 @@
+/**
+ * Class to store all task information
+ */
+
 class TaskData {
+    /**
+     * Construct the Task
+     * @param {Number} id The id of the task
+     * @param {String} taskName The name of the task
+     * @param {String} taskType The type of task
+     * @param {Number} points The number of points the task is worth
+     * @param {String} status The status of the task
+     * @param {String} desc The description of the task
+     * @param {String} tag The tag of the task
+     * @param {Number} assignee The id of the assignee of the task 
+     * @param {String} priority The priority of the task
+     * @param {Array<Map>} timeLog List of timelogs for the task
+     */
     constructor(id = "", taskName = "", taskType = "", points = null, status = null, desc = "", tag = null, assignee = '', priority = '', timeLog) {
         this._id = id;
         this._taskName = taskName;
@@ -34,41 +51,48 @@ class TaskData {
     get assignee() { return this._assignee; }
     get id() { return this._id; }
 
+    /**
+     * Convert raw data into instances of this class
+     * @param {*} dataList The data to convert into this class
+     * @returns {Array<TaskData>} A list of instances of this class with the correct data
+     */
     static fromData(dataList) {
         return dataList.map(data => {
             return new TaskData(data._id, data._taskName, data._taskType, data._points, data._status, data._desc, data._tag, data._assignee, data._priority, data._timeLog);
         });
     }
 
-    /* 
-        Add a timelog to the task
-
-        @param userID   The id of the user that worked on this task
-        @param date     The date that this task has been worked on in (DD/MM)
-        @param time     The amount of time spent on the task on this date
-    */
+    /**
+     * 
+     * @param {Number} userID The number of the user that worked on this task
+     * @param {String} date The data that this task has been worked on (DD/MM)
+     * @param {Number} time The amount of time spent on the task on this date
+     * @returns The new length of the timelog
+     */
     addTimelog = (userID, date, time) => this._timeLog.push({ date: date, time: time, userID: userID })
 
-    /*
-        Get total time worked on the task
-        
-    */
+    /**
+     * Get the total time worked on this task
+     * @returns The total time worked on this task
+     */
     getTotalTime() {
         let total = 0;
         this._timeLog.forEach(log => total += log.time);
         return total;
     }
 
-    /*
-        Get total time worked on task on a particular date
-    */
+    /**
+     * Get total time worked on task on a particular date
+     * @param {dayjs} date 
+     * @returns 
+     */
     getTotalTimeDate(date) {
         let total = 0;
         for (let i = 0; i < this._timeLog.length; i++) {
             const log = this._timeLog[i];
             if (log.date === date) total += log.time;
         }
-        return total; 
+        return total;
     }
 }
 

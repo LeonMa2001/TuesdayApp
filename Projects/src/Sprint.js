@@ -1,26 +1,24 @@
 /*
   Sprint page rendering.
 */
-import React from 'react';
-import { Button, Typography, TextField, Modal, Box, Grid } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BurndownChart from './BurndownChart';
-import Paper from '@mui/material/Paper';
+import { Box, Button, Grid, Modal, TextField, Typography } from '@mui/material';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
- 
+import React from 'react';
+import BurndownChart from './BurndownChart';
+
 import KanbanBoard from './KanbanBoard';
-import { Chart } from 'react-chartjs-2';
 
 const defaultState = {
-    name: "",
-    start_date: null, 
-    end_date: null,
-    status: "",
-    nameError: [],
-    timeError: []
+  name: "",
+  start_date: null,
+  end_date: null,
+  status: "",
+  nameError: [],
+  timeError: []
 }
 
 
@@ -32,16 +30,16 @@ export default class NewSprintModal extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-        ...defaultState,
-        open: this.props.open,
+      ...defaultState,
+      open: this.props.open,
     }
-    
+
     // Credit: MUI 
     this.popupStyle = { // style for the popup (taken directly from mui)
       position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
       width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4,
     };
-  
+
   }
 
   /*
@@ -51,18 +49,18 @@ export default class NewSprintModal extends React.Component {
     @param state_name   The specific time to change, either start_time or end_time
   */
   timeChanged = (e, state_name) => {
-    this.setState({[state_name]: e})
+    this.setState({ [state_name]: e })
 
     let error = false;
     let description = "";
 
     // End time < Start time
     if (this.state.start_date && this.state.end_date && this.state.end_date.isBefore(this.state.start_date)) {
-        error = true;
-        description = "End date cannot be less than start date"
+      error = true;
+      description = "End date cannot be less than start date"
     }
 
-    this.setState({timeError: [error, description]})
+    this.setState({ timeError: [error, description] })
   }
 
   /*
@@ -73,28 +71,28 @@ export default class NewSprintModal extends React.Component {
   */
   createTimePicker = (label, state_name) => (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-            label={label}
-            disablePast
-            value={this.state[state_name]}
-            inputFormat="DD/MM/YYYY"
-            onChange={(e) => this.timeChanged(e, state_name)}
-            required
-            minDate={state_name == "end_date" && this.state.start_date ? this.state.start_date.add(1, "day") : dayjs()}
-            maxDate={state_name == "start_date" && this.state.end_date ? this.state.end_date.subtract(1, "day") : null}
-            renderInput={(params) => <TextField {...params} helperText={state_name == "end_date" && this.state.timeError[0] ? this.state.timeError[1] : ""}/>}
-            error={state_name == "end_date" && this.state.timeError[0]}
-        />
+      <DatePicker
+        label={label}
+        disablePast
+        value={this.state[state_name]}
+        inputFormat="DD/MM/YYYY"
+        onChange={(e) => this.timeChanged(e, state_name)}
+        required
+        minDate={state_name == "end_date" && this.state.start_date ? this.state.start_date.add(1, "day") : dayjs()}
+        maxDate={state_name == "start_date" && this.state.end_date ? this.state.end_date.subtract(1, "day") : null}
+        renderInput={(params) => <TextField {...params} helperText={state_name == "end_date" && this.state.timeError[0] ? this.state.timeError[1] : ""} />}
+        error={state_name == "end_date" && this.state.timeError[0]}
+      />
     </LocalizationProvider>
-    )
-  
+  )
+
 
   /*
     Resets the state of the sprint modal so that all information is removed when it is next opened.
   */
   toggleState = () => {
-      this.setState({...defaultState})
-    };
+    this.setState({ ...defaultState })
+  };
 
   /*
     Handles when the name field is changed, ensuring it is a unique name for the sprint.
@@ -102,7 +100,7 @@ export default class NewSprintModal extends React.Component {
     @param e  The field change event
   */
   nameChanged = (e) => {
-    this.setState({name: e.target.value});
+    this.setState({ name: e.target.value });
     let error = false;
     let description = "";
     if (e.target.value == "") { // Name cannot be blank
@@ -111,10 +109,10 @@ export default class NewSprintModal extends React.Component {
     }
     const matches = this.props.sprints.filter(item => item.sprintName == e.target.value) // Name cannot already exist
     if (matches.length) {
-        error = true;
-        description = "Invalid name - name already exists";
+      error = true;
+      description = "Invalid name - name already exists";
     }
-    this.setState({nameError: [error, description]}) // Update error state
+    this.setState({ nameError: [error, description] }) // Update error state
   }
 
 
@@ -124,32 +122,32 @@ export default class NewSprintModal extends React.Component {
   render() {
     return (
       <div>
-        <Modal 
-            open={this.props.open} // open variable tells the popup whether to be open or not
-            onClose={() => this.toggleState} // handles the closure of the popup
-            aria-labelledby="modal-modal-title" // id of the title
-            > 
+        <Modal
+          open={this.props.open} // open variable tells the popup whether to be open or not
+          onClose={() => this.toggleState} // handles the closure of the popup
+          aria-labelledby="modal-modal-title" // id of the title
+        >
           <Box sx={this.popupStyle}>
             <Grid container spacing={3} alignItems="center">
-              <Grid item xs={12} style={{textAlign: "center"}}>
+              <Grid item xs={12} style={{ textAlign: "center" }}>
                 {/* Header text */}
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                Create Sprint
+                  Create Sprint
                 </Typography>
               </Grid>
               <Grid item xs={12} >
                 {/* Name field */}
-                <TextField 
-                id="outlined-basic" 
-                label="Name"
-                variant="outlined" 
-                required
-                fullWidth 
-                value={this.state.name} 
-                onChange={this.nameChanged}
-                error={this.state.nameError[0]} 
-                helperText={this.state.nameError[0] ? this.state.nameError[1] : ''}
-                autoComplete='off'
+                <TextField
+                  id="outlined-basic"
+                  label="Name"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  value={this.state.name}
+                  onChange={this.nameChanged}
+                  error={this.state.nameError[0]}
+                  helperText={this.state.nameError[0] ? this.state.nameError[1] : ''}
+                  autoComplete='off'
                 />
               </Grid>
               <Grid item xs={12} >
@@ -160,22 +158,22 @@ export default class NewSprintModal extends React.Component {
                 {/* Calendar option for sprint end date */}
                 {this.createTimePicker("Sprint End Date *", "end_date")}
               </Grid>
-              <Grid item xs={12} style={{textAlign: "center"}}>
+              <Grid item xs={12} style={{ textAlign: "center" }}>
                 {/* Add button */}
-                <Button 
-                color='primary' 
-                variant="contained" 
-                onClick={() => {this.props.handleSprintAdd(this.state.name, this.state.start_date, this.state.end_date); this.toggleState()}}
-                disabled={this.state.name == "" || this.state.start_date === null 
-                        || this.state.end_date === null || this.state.nameError[0] || this.state.timeError[0]
-                } // add button is disabled if input is invalid
+                <Button
+                  color='primary'
+                  variant="contained"
+                  onClick={() => { this.props.handleSprintAdd(this.state.name, this.state.start_date, this.state.end_date); this.toggleState() }}
+                  disabled={this.state.name == "" || this.state.start_date === null
+                    || this.state.end_date === null || this.state.nameError[0] || this.state.timeError[0]
+                  } // add button is disabled if input is invalid
                 >
-                Add
+                  Add
                 </Button>
                 <Button
-                color='error'
-                variant='contained'
-                onClick={() => {this.props.handleSprintAdd("", ""); this.toggleState()}}
+                  color='error'
+                  variant='contained'
+                  onClick={() => { this.props.handleSprintAdd("", ""); this.toggleState() }}
                 >
                   Cancel
                 </Button>
@@ -189,9 +187,9 @@ export default class NewSprintModal extends React.Component {
 }
 
 const nextStatus = {
-    "Not Started": "In Progress",
-    "In Progress": "Completed",
-    "Completed": "N/A"
+  "Not Started": "In Progress",
+  "In Progress": "Completed",
+  "Completed": "N/A"
 }
 
 // TODO add actual sprint rendering stuff here
@@ -215,15 +213,15 @@ export class DisplaySprint extends React.Component {
     if (this.props.sprintData.status != 'Not Started') {
       chart = (
         <React.Fragment>
-        <Grid item xs={12} style={{ textAlign: "center" }}>
-          <Typography variant="h6" component="h2">
-            Burndown Chart
-          </Typography>
-        </Grid>
-        <Grid item xs={12} style={{ textAlign: "center" }}>
-          <BurndownChart sprintData={this.props.sprintData} />
+          <Grid item xs={12} style={{ textAlign: "center" }}>
+            <Typography variant="h6" component="h2">
+              Burndown Chart
+            </Typography>
           </Grid>
-          </React.Fragment>
+          <Grid item xs={12} style={{ textAlign: "center" }}>
+            <BurndownChart sprintData={this.props.sprintData} />
+          </Grid>
+        </React.Fragment>
       );
     }
     if (this.props.displayItem) {
@@ -287,7 +285,7 @@ export class DisplaySprint extends React.Component {
             addTimeLog={this.props.addTimeLog}
           />
         </Grid>
-        
+
         {chart}
 
       </Grid >)
@@ -300,66 +298,66 @@ export class MoveItem extends React.Component {
     Modal to allow movement of tasks into sprints
   */
   constructor(props) {
-      super(props)
+    super(props)
   }
 
   // Credit: MUI 
   popupStyle = { // style for the popup (taken directly from mui)
-      position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-      width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4,
-    };
+    position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+    width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4,
+  };
 
   /*
     Takes the list of sprints, filters to only include non-active and non-completed sprints, and creates the React component to render.
   */
   formatSprints() {
-      return this.props.sprints.filter(sprint => sprint.status == "Not Started")
+    return this.props.sprints.filter(sprint => sprint.status == "Not Started")
       .map(sprint => {
-          return (
-              <Grid item key={sprint.sprintName} xs={12} style={{textAlign: "center"}}>
-                  <Button onClick={() => this.props.handleSelectedMoveLocation(sprint.sprintName)}>
-                  <Typography>
-                          {sprint.sprintName}
-                      </Typography>
-                  </Button>
-              </Grid>
-          )
+        return (
+          <Grid item key={sprint.sprintName} xs={12} style={{ textAlign: "center" }}>
+            <Button onClick={() => this.props.handleSelectedMoveLocation(sprint.sprintName)}>
+              <Typography>
+                {sprint.sprintName}
+              </Typography>
+            </Button>
+          </Grid>
+        )
       })
   }
 
   /*
     Main rendering function
   */
-  render() { 
-      return (
-          <div>
-            <Modal 
-                open={this.props.open} // open variable tells the popup whether to be open or not
-                onClose={() => this.toggleState} // handles the closure of the popup
-                aria-labelledby="modal-modal-title" // id of the title
-                > 
-              <Box sx={this.popupStyle}>
-                <Grid container spacing={3} alignItems="center">
-                  <Grid item xs={12} style={{textAlign: "center"}}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Move To
-                    </Typography>
-                  </Grid>
-                  {this.formatSprints()}
+  render() {
+    return (
+      <div>
+        <Modal
+          open={this.props.open} // open variable tells the popup whether to be open or not
+          onClose={() => this.toggleState} // handles the closure of the popup
+          aria-labelledby="modal-modal-title" // id of the title
+        >
+          <Box sx={this.popupStyle}>
+            <Grid container spacing={3} alignItems="center">
+              <Grid item xs={12} style={{ textAlign: "center" }}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                  Move To
+                </Typography>
               </Grid>
-              <Grid item xs={12} style={{textAlign: "center"}}>
-                {/* Cancel button */}
-                <Button
+              {this.formatSprints()}
+            </Grid>
+            <Grid item xs={12} style={{ textAlign: "center" }}>
+              {/* Cancel button */}
+              <Button
                 color='error'
                 variant='contained'
-                onClick={() => {this.props.handleSelectedMoveLocation("")}}
-                >
-                  Cancel
-                </Button>
-              </Grid>
-              </Box>
-            </Modal>
-          </div>
-        )
+                onClick={() => { this.props.handleSelectedMoveLocation("") }}
+              >
+                Cancel
+              </Button>
+            </Grid>
+          </Box>
+        </Modal>
+      </div>
+    )
   }
 }

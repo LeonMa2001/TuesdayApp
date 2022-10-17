@@ -3,20 +3,20 @@
     Also handles displaying a specific sprint when clicked on.
 */
 
-import React from 'react';
-import { Button, Box } from '@mui/material';
-import { DisplaySprint } from './Sprint.js'
-import clsx from 'clsx';
-import LinearProgress from '@mui/material/LinearProgress';
-import { CustomToolbar, CustomNoRowsOverlay } from './graphics/DataGridGraphics.js'
-import {
-    DataGrid,
-} from '@mui/x-data-grid';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
+import { Box, Button } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
+import {
+    DataGrid
+} from '@mui/x-data-grid';
+import clsx from 'clsx';
 import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import React from 'react';
+import { CustomNoRowsOverlay, CustomToolbar } from './graphics/DataGridGraphics.js';
+import { DisplaySprint } from './Sprint.js';
 dayjs.extend(advancedFormat);
- 
+
 
 function createSprintData(data) {
     return {
@@ -37,44 +37,44 @@ const columnsFunc = (renderDeleteButton) => [
         editable: false,
         sortable: false
     },
-    { 
+    {
         field: 'startDate',
         headerName: 'Start Date',
         width: 300,
         editable: false,
         sortable: false
     },
-    { 
+    {
         field: 'endDate',
         headerName: 'End Date',
         width: 300,
         editable: false,
         sortable: false
     },
-    { 
+    {
         field: 'status',
         headerName: 'Status',
         width: 300,
         cellClassName: (params) => {
             if (params.value == null) {
-              return '';
+                return '';
             }
-  
-        return clsx('sprint-status', {
-            notstarted: params.value == 'Not Started',
-            inprogress: params.value == 'In Progress', 
-            completed: params.value == 'Completed',
-        });
+
+            return clsx('sprint-status', {
+                notstarted: params.value == 'Not Started',
+                inprogress: params.value == 'In Progress',
+                completed: params.value == 'Completed',
+            });
         },
         editable: false,
         sortable: false
     },
     {
-      field: "deleteTask",
-      headerName: "",
-      width: 100,
-      renderCell: renderDeleteButton,
-      sortable: false
+        field: "deleteTask",
+        headerName: "",
+        width: 100,
+        renderCell: renderDeleteButton,
+        sortable: false
     }
 ];
 
@@ -177,14 +177,14 @@ export default class DisplaySprints extends React.Component {
             return <DisplaySprint
                 sprintData={this.getSprintData()}
                 enableLock={this.props.enableLock}
-                handleSprintStatusChange={this.props.handleSprintStatusChange} 
+                handleSprintStatusChange={this.props.handleSprintStatusChange}
                 teamMembers={this.props.teamMembers}
                 editing={this.props.editing}
-                handleItemClick={this.props.handleItemClick} 
-                displayItem={this.props.displayItem} 
+                handleItemClick={this.props.handleItemClick}
+                displayItem={this.props.displayItem}
                 saveInfo={this.props.saveInfo}
                 addTimeLog={this.props.addTimeLog}
-                />
+            />
         }
         return this.generateDataGrid();
 

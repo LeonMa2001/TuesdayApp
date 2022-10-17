@@ -1,9 +1,9 @@
-/*
-    Burndown chart creation
-*/
+/**
+ * Burndown Chart creation
+ */
 
 import { CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
-import * as React from 'react';
+import { Component } from 'react';
 import { Line } from 'react-chartjs-2';
 
 ChartJS.register( // registers the chart
@@ -16,11 +16,19 @@ ChartJS.register( // registers the chart
     Legend
 );
 
-export default class BurndownChart extends React.Component {
+export default class BurndownChart extends Component {
+    /**
+     * Construct the chart
+     * @param {Map} props Properties passed down from parent
+     */
     constructor(props) {
         super(props);
     }
 
+    /**
+     * Get the total estimated time using story points for the sprint
+     * @return The total time
+     */
     getTotalEstimatedTime() {
         let total = 0;
         this.props.sprintData.tasks.forEach(task => {
@@ -29,6 +37,9 @@ export default class BurndownChart extends React.Component {
         return total;
     }
 
+    /**
+     * Generate the data set for the chart
+     */
     generateDataSet() {
         this.dates = [];
         this.idealVelocity = [];
@@ -67,6 +78,10 @@ export default class BurndownChart extends React.Component {
         }
     }
 
+    /**
+     * Render the burndown chart
+     * @returns The burndown chart
+     */
     render() {
         this.generateDataSet();
         return (
